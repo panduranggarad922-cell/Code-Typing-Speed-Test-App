@@ -1,168 +1,323 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GKD8H5FTZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service | Pro Document Converter</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
-  gtag('config', 'G-9GKD8H5FTZ');
-</script>
-<title>Terms & Conditions</title>
+    :root {
+      --bg-deep: #05050f;
+      --card-glass: rgba(16, 18, 27, 0.6);
+      --accent-cyan: #00f0ff;
+      --accent-pink: #ff007c;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glow: rgba(0, 240, 255, 0.2);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-deep);
+      color: var(--text-light);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* === ANIMATED BACKGROUND ORBS === */
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      animation: floatOrb 10s infinite alternate ease-in-out;
+    }
+    .orb-1 {
+      width: 400px; height: 400px;
+      background: rgba(0, 240, 255, 0.15);
+      top: -100px; left: -100px;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: rgba(255, 0, 124, 0.15);
+      bottom: -150px; right: -100px;
+      animation-delay: -5s;
+    }
+    @keyframes floatOrb {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(50px) scale(1.1); }
+    }
+
+    /* === TOP NAVIGATION === */
+    .top-nav {
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(5, 5, 15, 0.8);
+      border-bottom: 1px solid var(--border-glow);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo {
+      font-weight: 800;
+      font-size: 20px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .back-btn {
+      padding: 8px 18px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-light);
+      text-decoration: none;
+      border: 1px solid var(--border-glow);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+
+    /* === MAIN CONTAINER === */
+    .container {
+      max-width: 950px;
+      margin: 40px auto;
+      padding: 0 20px;
+      animation: slideUpFade 1s ease forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    @keyframes slideUpFade {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === PROFILE CARD (TOP) === */
+    .founder-card {
+      background: var(--card-glass);
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 35px;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      margin-bottom: 40px;
+      transition: transform 0.3s ease;
+    }
+
+    .founder-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 0, 124, 0.4);
+    }
+
+    .founder-img {
+      width: 130px;
+      height: 130px;
+      border-radius: 12%;
+      border: 2px solid transparent;
+      background: linear-gradient(var(--bg-deep), var(--bg-deep)) padding-box,
+                  linear-gradient(45deg, var(--accent-cyan), var(--accent-pink)) border-box;
+      padding: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .founder-info h2 {
+      margin: 0 0 5px;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-light);
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), rgba(255, 0, 124, 0.1));
+      color: var(--accent-cyan);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      margin-bottom: 12px;
+    }
+
+    .founder-info p {
+      margin: 6px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* === CONTENT SECTIONS === */
+    .content-section {
+      background: var(--card-glass);
+      border: 1px solid var(--border-glow);
+      border-radius: 16px;
+      padding: 35px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(15px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-section::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-pink));
+    }
+
+    .content-section h3 {
+      font-size: 22px;
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: var(--text-light);
+      font-weight: 800;
+    }
+
+    .content-section p {
+      margin-bottom: 15px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .content-section ul {
+      padding-left: 20px;
+      margin-bottom: 0;
+    }
+
+    .content-section li {
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .content-section li strong {
+      color: var(--text-light);
+    }
+
+    /* === FOOTER === */
+    footer {
+      text-align: center;
+      padding: 40px;
+      border-top: 1px solid var(--border-glow);
+      margin-top: 60px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin: 0 10px;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: var(--accent-cyan);
+    }
+
+    @media (max-width: 768px) {
+      .founder-card {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
-  <style>/* Background */
-body::before {
-  content: "";
-  position: fixed;
+<body>
 
-top:0;
-  left:0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(-45deg, #1a2a6c, #b21f1f, #fdbb2d);
-  background-size: 400% 400%;
-  animation: gradientBG 10s ease infinite;
+  <!-- Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
 
-  z-index: -1;
-}
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+  <!-- Top Navigation -->
+  <div class="top-nav">
+    <span class="brand-logo">DocuConvert Pro</span>
+    <a href="index.html" class="back-btn">← Back to Tools</a>
+  </div>
 
-</style>
-    <style>
-.back-btn {
-  position: static;
-  top: 15px;
-  left: 15px;
-  background-color: #ff0000;
-  color: white;
-  padding: 8px 12px;
-  text-decoration: none;
-  border-radius: 5px;
-  font-size: 14px;
-}
+  <div class="container">
+    
+    <!-- PROFILE CARD -->
+    <div class="founder-card">
+      <img src="me.jpeg" alt="Pandurang Baliram Garad" class="founder-img">
+      <div class="founder-info">
+        <span class="badge">Platform Founder</span>
+        <h2>Pandurang Baliram Garad</h2>
+        <p>📍 Nanded, Maharashtra, India</p>
+        <p>📧 panduranggarad922@gmail.com</p>
+      </div>
+    </div>
 
-.back-btn:hover {
-  background-color: #b30000;
-}
-</style>
-<a href="index.html" class="back-btn">← Back</a>
-<body style="font-family: Arial; padding:20px; background:#111; color:white;">
+    <!-- TERMS CONTENT -->
+    <div class="content-section">
+      <h3>Terms of Service</h3>
+      <p>Welcome to <strong>Document to Image Converter</strong>. These terms and conditions outline the rules and regulations for the use of our website and document conversion utilities.</p>
+      <p>By accessing this website, we assume you accept these terms and conditions in full. Do not continue to use the platform if you do not agree to all of the terms and conditions stated on this page.</p>
+    </div>
 
-<h2>Terms & Conditions</h2>
+    <div class="content-section">
+      <h3>1. Acceptance of Use</h3>
+      <p>By using our document conversion tools (PDF, Excel, Word, PPT to image), you agree to comply with all local and international web usage laws. You must use our services solely for lawful conversion tasks and personal or professional productivity workflows.</p>
+    </div>
 
-<p>By using this website, you agree to follow the rules.</p>
+    <div class="content-section">
+      <h3>2. Intellectual Property Rights</h3>
+      <p>Other than content you own, under these Terms, <strong>Document to Image Converter</strong> and/or its licensors own all the intellectual property rights and materials contained on this website. You are granted limited license only for purposes of viewing and utilizing the tools provided.</p>
+    </div>
 
-<p>This typing test app is for practice purposes only.</p>
+    <div class="content-section">
+      <h3>3. Restrictions</h3>
+      <p>You are specifically restricted from all of the following:</p>
+      <ul>
+        <li>Publishing any website material in any other media without prior written consent.</li>
+        <li>Selling, sublicensing, or otherwise commercializing any website material.</li>
+        <li>Using this website in any way that is or may be damaging to this website or system servers.</li>
+        <li>Using this website contrary to applicable laws and regulations, or in any way that may cause harm to the platform or any person/business entity.</li>
+      </ul>
+    </div>
 
-<p>We are not responsible for any loss or misuse.</p>
-<p>
-Welcome to our website. By accessing and using this website, you accept and agree 
-to be bound by the terms and conditions outlined below. If you do not agree with 
-any part of these terms, please do not use our website.
-</p>
+    <div class="content-section">
+      <h3>4. Limitation of Liability</h3>
+      <p>In no event shall <strong>Document to Image Converter</strong>, nor any of its officers, directors, and employees, be held liable for anything arising out of or in any way connected with your use of this website. Our conversion tools are provided "as is" with all faults, and we express no representations or warranties of any kind related to this website or the materials contained on this website.</p>
+    </div>
 
-<p>
-This website provides a typing speed test tool for educational and practice purposes. 
-The content and services are offered to help users improve their typing skills.
-</p>
+    <div class="content-section">
+      <h3>5. Changes to Terms</h3>
+      <p>We reserve the right to revise these terms at any time as we see fit, and by using this website you are expected to review these terms on a regular basis to ensure you understand all terms and conditions governing the use of this platform.</p>
+    </div>
 
-<p>
-You agree to use this website only for lawful purposes. You must not use this website 
-in any way that causes damage to the website or impairs the availability or accessibility 
-of the service.
-</p>
+  </div>
 
-<p>
-All content provided on this website is for general information and educational purposes only. 
-We do not guarantee the accuracy, completeness, or reliability of any information on this site.
-</p>
-
-<p>
-We reserve the right to modify, update, or remove any part of the website or these terms 
-at any time without prior notice. It is your responsibility to review this page regularly.
-</p>
-
-<p>
-This website may display advertisements provided by third-party services such as Google AdSense. 
-We are not responsible for the content or accuracy of advertisements shown on the website.
-</p>
-
-<p>
-Users are not allowed to copy, reproduce, or distribute any content from this website 
-without prior permission. All rights are reserved.
-</p>
-
-<p>
-We are not liable for any loss or damage that may occur from using this website. 
-Use of this website is at your own risk.
-</p>
-
-<p>
-This website may include links to external websites. These links are provided for 
-convenience, and we do not have control over the content or practices of those sites.
-</p>
-
-<p>
-We do not guarantee that the website will always be available or free from errors. 
-Technical issues may occur from time to time.
-</p>
-
-<p>
-Users must not attempt to misuse the website, including hacking, introducing malicious 
-code, or disrupting the service in any way.
-</p>
-
-<p>
-We reserve the right to restrict or terminate access to the website if any user violates 
-these terms and conditions.
-</p>
-
-<p>
-By continuing to use this website, you confirm that you understand and agree to these terms.
-</p>
-
-<p>
-These terms and conditions are governed by applicable laws, and any disputes will be handled 
-according to the relevant legal framework.
-</p>
-
-<p>
-If you have any questions regarding these Terms and Conditions, you can contact us through 
-our Contact page.
-</p>
-
-<p>
-We aim to provide a useful and reliable platform for users, but we cannot guarantee 
-continuous availability or error-free performance.
-</p>
-
-<p>
-Users are responsible for ensuring that their use of this website complies with all 
-applicable laws and regulations.
-</p>
-
-<p>
-We may update or change these terms at any time to reflect changes in our services 
-or legal requirements.
-</p>
-
-<p>
-Your continued use of the website after changes are made will be considered as your 
-acceptance of the updated terms.
-</p>
-
+  <!-- FOOTER -->
   <footer>
-  <a href="/index.html">Home</a>
-  <a href="/about.html">About</a>
-  <a href="/blog.html">Blog</a>
-  <a href="/contact.html">Contact</a>
-  <a href="/privacy.html">Privacy Policy</a>
-</footer>
+    <p>&copy; 2026 Document to Image Converter | Built in Nanded, India.</p>
+    <div style="margin-top: 10px;">
+      <a href="index.html">Home</a> |
+      <a href="about.html">About Us</a> |
+      <a href="contact.html">Support Desk</a> |
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms of Service</a>
+    </div>
+  </footer>
+
 </body>
 </html>
