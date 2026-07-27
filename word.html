@@ -204,6 +204,456 @@ body {
   </div>
   
   <div id="draftList"></div>
+
+
+
+
+
+
+
+<!-- ==================== ULTIMATE WORD SUITE SECTION START ==================== -->
+<div class="word-guide-master-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+        /* Master Container Scope */
+        .word-guide-master-wrapper {
+            font-family: 'Poppins', sans-serif;
+            background-color: #040814;
+            color: #ffffff;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            margin: 40px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(0, 195, 255, 0.25);
+        }
+
+        .word-guide-master-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Ambient Glowing Background Orbs (2-Color Theme: Royal Blue & Neon Pink) */
+        .word-guide-master-wrapper .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+            z-index: 0;
+            animation: floatOrb 10s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Color 1: Royal Word Blue & Cyan */
+        .word-guide-master-wrapper .orb-1 {
+            width: 360px;
+            height: 360px;
+            background: linear-gradient(45deg, #0927ec, #12cef0);
+            top: -60px;
+            left: -60px;
+        }
+
+        /* Color 2: Neon Magenta / Pink (Dynamic Dual Color Contrast) */
+        .word-guide-master-wrapper .orb-2 {
+            width: 360px;
+            height: 360px;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            bottom: -60px;
+            right: -60px;
+            animation-delay: -5s;
+        }
+
+        .word-guide-master-wrapper .orb-3 {
+            width: 260px;
+            height: 260px;
+            background: linear-gradient(45deg, #00c8ff, #00ffcc);
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.25;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(25px, 30px) scale(1.08); }
+        }
+
+        /* Inner Content Container */
+        .word-guide-master-wrapper .word-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Panel Base */
+        .word-guide-master-wrapper .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(18, 206, 240, 0.18);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .word-guide-master-wrapper .glass-card:hover {
+            border-color: rgba(18, 206, 240, 0.4);
+            box-shadow: 0 25px 60px rgba(9, 39, 236, 0.25);
+        }
+
+        /* Hero Header */
+        .word-guide-master-wrapper .hero {
+            text-align: center;
+            padding: 50px 25px;
+            background: rgba(9, 39, 236, 0.08);
+            border: 1px solid rgba(18, 206, 240, 0.25);
+        }
+
+        .word-guide-master-wrapper .hero-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            background: linear-gradient(90deg, #0927ec, #12cef0);
+            color: #ffffff;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(18, 206, 240, 0.5);
+        }
+
+        .word-guide-master-wrapper .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff 10%, #12cef0 50%, #ff007f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .word-guide-master-wrapper .subtitle {
+            font-size: 1.1rem;
+            color: #b0c4de;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Section Titles */
+        .word-guide-master-wrapper .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .word-guide-master-wrapper .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #12cef0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .word-guide-master-wrapper .section-icon {
+            font-size: 1.8rem;
+            background: rgba(18, 206, 240, 0.12);
+            border: 1px solid rgba(18, 206, 240, 0.25);
+            padding: 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Feature Grid */
+        .word-guide-master-wrapper .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .word-guide-master-wrapper .feature-box {
+            background: rgba(10, 16, 35, 0.75);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .word-guide-master-wrapper .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color, #12cef0);
+        }
+
+        .word-guide-master-wrapper .feature-box:hover {
+            transform: translateY(-6px);
+            background: rgba(9, 39, 236, 0.15);
+            box-shadow: 0 15px 35px var(--glow-color, rgba(18, 206, 240, 0.25));
+            border-color: var(--accent-color, #12cef0);
+        }
+
+        .word-guide-master-wrapper .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .word-guide-master-wrapper .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .word-guide-master-wrapper .feature-desc {
+            font-size: 0.9rem;
+            color: #a5b9d0;
+            line-height: 1.6;
+        }
+
+        /* Options & Steps */
+        .word-guide-master-wrapper .option-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(18, 206, 240, 0.12);
+        }
+
+        .word-guide-master-wrapper .option-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #12cef0;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .word-guide-master-wrapper .steps-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .word-guide-master-wrapper .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 3px solid #12cef0;
+        }
+
+        .word-guide-master-wrapper .step-num {
+            background: linear-gradient(135deg, #0927ec, #12cef0);
+            color: #fff;
+            font-weight: 800;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .word-guide-master-wrapper .step-text {
+            font-size: 0.9rem;
+            color: #d0e0f5;
+            line-height: 1.5;
+        }
+
+        .word-guide-master-wrapper .step-text strong {
+            color: #fff;
+        }
+
+        /* Pro Tips Card */
+        .word-guide-master-wrapper .pro-tips-card {
+            background: linear-gradient(135deg, rgba(9, 39, 236, 0.15), rgba(255, 0, 127, 0.12));
+            border: 1px solid rgba(255, 0, 127, 0.3);
+            position: relative;
+        }
+
+        .word-guide-master-wrapper .tip-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .word-guide-master-wrapper .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #e2ebf5;
+            line-height: 1.5;
+        }
+
+        .word-guide-master-wrapper .tip-bullet {
+            color: #ff007f;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .word-guide-master-wrapper .title { font-size: 2rem; }
+            .word-guide-master-wrapper .subtitle { font-size: 0.95rem; }
+            .word-guide-master-wrapper .glass-card { padding: 20px; }
+        }
+    </style>
+
+    <!-- Background Glows (Dual Color Contrast: Royal Blue & Neon Pink) -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <!-- MAIN WRAPPER CONTENT -->
+    <div class="word-container">
+
+        <!-- HERO HEADER CONTAINER -->
+        <div class="glass-card hero">
+            <span class="hero-badge">📘 Pro Word Document Suite</span>
+            <h1 class="title">Ultimate Word Suite</h1>
+            <p class="subtitle">
+                Convert Word documents to PDF & Images, extract PDFs or Photos to Editable Word files, with live filters, text overlays, and smart drafts!
+            </p>
+        </div>
+
+        <!-- FEATURES GRID CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <h2>Word Conversion Tools</h2>
+            </div>
+
+            <div class="grid">
+                <!-- Word to PDF -->
+                <div class="feature-box" style="--accent-color: #12cef0; --glow-color: rgba(18, 206, 240, 0.25);">
+                    <div class="feature-icon">📘➔📕</div>
+                    <div class="feature-title">Word ➔ PDF</div>
+                    <div class="feature-desc">Apni Word files (.docx / .doc) ko crisp, high-quality A4 PDF documents mein instantly convert karein.</div>
+                </div>
+
+                <!-- Word to Images -->
+                <div class="feature-box" style="--accent-color: #ff007f; --glow-color: rgba(255, 0, 127, 0.25);">
+                    <div class="feature-icon">📘➔🏞️</div>
+                    <div class="feature-title">Word ➔ Images</div>
+                    <div class="feature-desc">Word documents ke har page ko HD images (JPG/PNG) mein auto-paginate karke extract karein.</div>
+                </div>
+
+                <!-- PDF to Word -->
+                <div class="feature-box" style="--accent-color: #00ffcc; --glow-color: rgba(0, 255, 204, 0.25);">
+                    <div class="feature-icon">📕➔📘</div>
+                    <div class="feature-title">PDF ➔ Word</div>
+                    <div class="feature-desc">PDF files se text aur content extract karke unhe editable Word documents (.doc) me badlein.</div>
+                </div>
+
+                <!-- Images to Word -->
+                <div class="feature-box" style="--accent-color: #7928ca; --glow-color: rgba(121, 40, 202, 0.25);">
+                    <div class="feature-icon">🏞️➔📘</div>
+                    <div class="feature-title">Images ➔ Word</div>
+                    <div class="feature-desc">Multiple photos aur scanned pages ko compile karke ek single Word file document banayein.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOW TO USE CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">🛠️</div>
+                <h2>Quick Conversion Guide</h2>
+            </div>
+
+            <!-- Option 1: Word to PDF & Images -->
+            <div class="option-container">
+                <div class="option-title">
+                    <span>📘</span> Word Document Conversions
+                </div>
+                <div class="steps-list">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><strong>Select Conversion:</strong> Dashboard par "Word ➔ PDF" ya "Word ➔ Images" chunnein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><strong>Import File:</strong> Apni Word (.docx / .doc) file upload karein. Processing ke baad live workspace open hoga.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-text"><strong>Edit & Adjust:</strong> Filters, Crop, Text watermark add karein, compress slider set karein aur download karein!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2: Reverse Conversions -->
+            <div class="option-container">
+                <div class="option-title" style="color: #ff007f;">
+                    <span>⚡</span> PDF & Images ➔ Word Conversion
+                </div>
+                <div class="steps-list">
+                    <div class="step-item" style="border-left-color: #ff007f;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #ff007f, #7928ca);">1</div>
+                        <div class="step-text"><strong>Upload File:</strong> "PDF ➔ Word" ya "Images ➔ Word" button par click karke apni file choose karein.</div>
+                    </div>
+                    <div class="step-item" style="border-left-color: #ff007f;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #ff007f, #7928ca);">2</div>
+                        <div class="step-text"><strong>Auto Extract:</strong> Fast suite engine aapke content ko convert karke .doc format mein instant save kar dega.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRO TIPS CONTAINER -->
+        <div class="glass-card pro-tips-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(255, 0, 127, 0.2);">💡</div>
+                <h2 style="background: linear-gradient(90deg, #ff007f, #12cef0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pro-Tips For Power Users</h2>
+            </div>
+            <div class="tip-list">
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Smart Auto-Drafts:</strong> Aapka ongoing project automatic save ho jata hai. Unhe Dashboard ke 'Saved Drafts' se jab chahein resume karein.</div>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Live Compress Control:</strong> PDF download se pehle Compression slider ki madad se estimated size (KB/MB) live dekhein aur fix karein.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ==================== ULTIMATE WORD SUITE SECTION END ==================== -->
+
+
+
+
+
+
+  
 </div>
 
 <!-- PAGE 2: WORKSPACE -->
