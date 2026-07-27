@@ -204,6 +204,456 @@ body {
   </div>
   
   <div id="draftList"></div>
+
+
+
+
+
+
+<!-- ==================== ULTIMATE PPT SUITE SECTION START ==================== -->
+<div class="ppt-guide-master-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+        /* Master Container Scope */
+        .ppt-guide-master-wrapper {
+            font-family: 'Poppins', sans-serif;
+            background-color: #09090b;
+            color: #ffffff;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            margin: 40px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 153, 0, 0.25);
+        }
+
+        .ppt-guide-master-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Ambient Glowing Background Orbs (Orange & Fiery Red Theme) */
+        .ppt-guide-master-wrapper .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+            z-index: 0;
+            animation: floatOrb 10s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Color 1: Warm PPT Orange & Gold */
+        .ppt-guide-master-wrapper .orb-1 {
+            width: 360px;
+            height: 360px;
+            background: linear-gradient(45deg, #d42f2f, #ff9900);
+            top: -60px;
+            left: -60px;
+        }
+
+        /* Color 2: Fiery Red & Crimson Pink */
+        .ppt-guide-master-wrapper .orb-2 {
+            width: 360px;
+            height: 360px;
+            background: linear-gradient(45deg, #ff0055, #ff6600);
+            bottom: -60px;
+            right: -60px;
+            animation-delay: -5s;
+        }
+
+        .ppt-guide-master-wrapper .orb-3 {
+            width: 260px;
+            height: 260px;
+            background: linear-gradient(45deg, #ffaa00, #ff0055);
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.25;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(25px, 30px) scale(1.08); }
+        }
+
+        /* Inner Content Container */
+        .ppt-guide-master-wrapper .ppt-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Panel Base */
+        .ppt-guide-master-wrapper .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 170, 0, 0.2);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .ppt-guide-master-wrapper .glass-card:hover {
+            border-color: rgba(255, 170, 0, 0.4);
+            box-shadow: 0 25px 60px rgba(255, 102, 0, 0.25);
+        }
+
+        /* Hero Header */
+        .ppt-guide-master-wrapper .hero {
+            text-align: center;
+            padding: 50px 25px;
+            background: rgba(255, 102, 0, 0.08);
+            border: 1px solid rgba(255, 153, 0, 0.3);
+        }
+
+        .ppt-guide-master-wrapper .hero-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            background: linear-gradient(90deg, #ff9900, #d42f2f);
+            color: #ffffff;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 153, 0, 0.5);
+        }
+
+        .ppt-guide-master-wrapper .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff 10%, #ffaa00 50%, #ff0055 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .ppt-guide-master-wrapper .subtitle {
+            font-size: 1.1rem;
+            color: #d1d1d6;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Section Titles */
+        .ppt-guide-master-wrapper .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ppt-guide-master-wrapper .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ppt-guide-master-wrapper .section-icon {
+            font-size: 1.8rem;
+            background: rgba(255, 170, 0, 0.12);
+            border: 1px solid rgba(255, 170, 0, 0.25);
+            padding: 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Feature Grid */
+        .ppt-guide-master-wrapper .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .ppt-guide-master-wrapper .feature-box {
+            background: rgba(20, 20, 22, 0.85);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .ppt-guide-master-wrapper .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color, #ffaa00);
+        }
+
+        .ppt-guide-master-wrapper .feature-box:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 102, 0, 0.15);
+            box-shadow: 0 15px 35px var(--glow-color, rgba(255, 170, 0, 0.25));
+            border-color: var(--accent-color, #ffaa00);
+        }
+
+        .ppt-guide-master-wrapper .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .ppt-guide-master-wrapper .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .ppt-guide-master-wrapper .feature-desc {
+            font-size: 0.9rem;
+            color: #a1a1aa;
+            line-height: 1.6;
+        }
+
+        /* Options & Steps */
+        .ppt-guide-master-wrapper .option-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 170, 0, 0.15);
+        }
+
+        .ppt-guide-master-wrapper .option-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffaa00;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ppt-guide-master-wrapper .steps-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .ppt-guide-master-wrapper .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 3px solid #ffaa00;
+        }
+
+        .ppt-guide-master-wrapper .step-num {
+            background: linear-gradient(135deg, #ff9900, #d42f2f);
+            color: #fff;
+            font-weight: 800;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .ppt-guide-master-wrapper .step-text {
+            font-size: 0.9rem;
+            color: #e4e4e7;
+            line-height: 1.5;
+        }
+
+        .ppt-guide-master-wrapper .step-text strong {
+            color: #fff;
+        }
+
+        /* Pro Tips Card */
+        .ppt-guide-master-wrapper .pro-tips-card {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.15), rgba(255, 0, 85, 0.12));
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            position: relative;
+        }
+
+        .ppt-guide-master-wrapper .tip-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .ppt-guide-master-wrapper .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #e4e4e7;
+            line-height: 1.5;
+        }
+
+        .ppt-guide-master-wrapper .tip-bullet {
+            color: #ff0055;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .ppt-guide-master-wrapper .title { font-size: 2rem; }
+            .ppt-guide-master-wrapper .subtitle { font-size: 0.95rem; }
+            .ppt-guide-master-wrapper .glass-card { padding: 20px; }
+        }
+    </style>
+
+    <!-- Ambient Background Glows (Orange Red Glow) -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <!-- MAIN WRAPPER CONTENT -->
+    <div class="ppt-container">
+
+        <!-- HERO HEADER CONTAINER -->
+        <div class="glass-card hero">
+            <span class="hero-badge">📙 Pro PPT Document Suite</span>
+            <h1 class="title">Ultimate PPT Suite</h1>
+            <p class="subtitle">
+                Convert PowerPoint Presentations to PDF & Images, extract PDFs or Photos to Presentation decks, with live filters, text overlays, and smart drafts!
+            </p>
+        </div>
+
+        <!-- FEATURES GRID CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <h2>PPT Conversion Tools</h2>
+            </div>
+
+            <div class="grid">
+                <!-- PPT to PDF -->
+                <div class="feature-box" style="--accent-color: #ffaa00; --glow-color: rgba(255, 170, 0, 0.25);">
+                    <div class="feature-icon">🟧➔📕</div>
+                    <div class="feature-title">PPT ➔ PDF</div>
+                    <div class="feature-desc">Apni PPT / PPTX slides ko crisp, high-quality A4 PDF documents mein instantly convert karein.</div>
+                </div>
+
+                <!-- PPT to Images -->
+                <div class="feature-box" style="--accent-color: #ff6600; --glow-color: rgba(255, 102, 0, 0.25);">
+                    <div class="feature-icon">🟧➔🏞️</div>
+                    <div class="feature-title">PPT ➔ Images</div>
+                    <div class="feature-desc">Presentation slide ke har page ko HD images (JPG) mein auto-extract karke save karein.</div>
+                </div>
+
+                <!-- PDF to PPT -->
+                <div class="feature-box" style="--accent-color: #ff0055; --glow-color: rgba(255, 0, 85, 0.25);">
+                    <div class="feature-icon">📕➔🟧</div>
+                    <div class="feature-title">PDF ➔ PPT</div>
+                    <div class="feature-desc">PDF files se slides extract karke unhe editable PPT format (.ppt) me badlein.</div>
+                </div>
+
+                <!-- Images to PPT -->
+                <div class="feature-box" style="--accent-color: #d42f2f; --glow-color: rgba(212, 47, 47, 0.25);">
+                    <div class="feature-icon">🏞️➔🟧</div>
+                    <div class="feature-title">Images ➔ PPT</div>
+                    <div class="feature-desc">Multiple photos aur scanned pages ko combine karke ek single Presentation PPT file banayein.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOW TO USE CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">🛠️</div>
+                <h2>Quick Conversion Guide</h2>
+            </div>
+
+            <!-- Option 1: PPT Conversions -->
+            <div class="option-container">
+                <div class="option-title">
+                    <span>🟧</span> PPT Slide Conversions
+                </div>
+                <div class="steps-list">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><strong>Select Conversion:</strong> Dashboard par "PPT ➔ PDF" ya "PPT ➔ Images" chunnein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><strong>Import File:</strong> Apni Presentation (.ppt / .pptx) file upload karein. Processing ke baad live workspace open hoga.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-text"><strong>Edit & Adjust:</strong> Filters, Crop, PIP image add karein, compress slider set karein aur download karein!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2: Reverse Conversions -->
+            <div class="option-container">
+                <div class="option-title" style="color: #ff0055;">
+                    <span>⚡</span> PDF & Images ➔ PPT Conversion
+                </div>
+                <div class="steps-list">
+                    <div class="step-item" style="border-left-color: #ff0055;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #ff0055, #d42f2f);">1</div>
+                        <div class="step-text"><strong>Upload File:</strong> "PDF ➔ PPT" ya "Images ➔ PPT" button par click karke apni file choose karein.</div>
+                    </div>
+                    <div class="step-item" style="border-left-color: #ff0055;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #ff0055, #d42f2f);">2</div>
+                        <div class="step-text"><strong>Auto Extract:</strong> Fast suite engine aapke content ko process karke PPT presentation format mein save kar dega.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRO TIPS CONTAINER -->
+        <div class="glass-card pro-tips-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(255, 0, 85, 0.2);">💡</div>
+                <h2 style="background: linear-gradient(90deg, #ff0055, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pro-Tips For Power Users</h2>
+            </div>
+            <div class="tip-list">
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Smart Auto-Drafts:</strong> Aapka ongoing PPT project automatic draft mein save ho jata hai. Unhe Dashboard ke 'Saved Drafts' se jab chahein open karein.</div>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Live Quality & Compress Control:</strong> PDF download karne se pehle Compression slider se live file size (KB/MB) dekhein aur adjust karein.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ==================== ULTIMATE PPT SUITE SECTION END ==================== -->
+
+
+
+
+
+
+
+  
 </div>
 
 <!-- PAGE 2: WORKSPACE -->
