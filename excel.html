@@ -192,6 +192,455 @@ body {
     <button onclick="deleteAllDrafts()" style="background:none; border:none; color:#ff0055; cursor:pointer; font-weight:bold;">Clear All</button>
   </div>
   <div id="draftList"></div>
+
+
+
+
+
+
+
+<!-- ==================== ULTIMATE EXCEL CONVERTER SECTION START ==================== -->
+<div class="excel-guide-master-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+        /* Master Container Scope */
+        .excel-guide-master-wrapper {
+            font-family: 'Poppins', sans-serif;
+            background-color: #050b07;
+            color: #ffffff;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            margin: 40px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(0, 255, 135, 0.2);
+        }
+
+        .excel-guide-master-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Ambient Glowing Background Orbs (Excel Green Theme) */
+        .excel-guide-master-wrapper .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.5;
+            z-index: 0;
+            animation: floatOrb 10s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .excel-guide-master-wrapper .orb-1 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(45deg, #00ff87, #107c41);
+            top: -60px;
+            left: -60px;
+        }
+
+        .excel-guide-master-wrapper .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(45deg, #00f2fe, #13d070);
+            bottom: -60px;
+            right: -60px;
+            animation-delay: -5s;
+        }
+
+        .excel-guide-master-wrapper .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.2;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(25px, 30px) scale(1.08); }
+        }
+
+        /* Inner Content Container */
+        .excel-guide-master-wrapper .excel-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Panel Base */
+        .excel-guide-master-wrapper .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 135, 0.15);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .excel-guide-master-wrapper .glass-card:hover {
+            border-color: rgba(0, 255, 135, 0.35);
+            box-shadow: 0 25px 60px rgba(0, 255, 135, 0.15);
+        }
+
+        /* Hero Header */
+        .excel-guide-master-wrapper .hero {
+            text-align: center;
+            padding: 50px 25px;
+            background: rgba(16, 124, 65, 0.08);
+            border: 1px solid rgba(0, 255, 135, 0.25);
+        }
+
+        .excel-guide-master-wrapper .hero-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            background: linear-gradient(90deg, #107c41, #00ff87);
+            color: #000;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 135, 0.5);
+        }
+
+        .excel-guide-master-wrapper .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff 10%, #00ff87 50%, #60efff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .excel-guide-master-wrapper .subtitle {
+            font-size: 1.1rem;
+            color: #b0d8c0;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Section Titles */
+        .excel-guide-master-wrapper .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .excel-guide-master-wrapper .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #00ff87);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .excel-guide-master-wrapper .section-icon {
+            font-size: 1.8rem;
+            background: rgba(0, 255, 135, 0.1);
+            border: 1px solid rgba(0, 255, 135, 0.2);
+            padding: 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Feature Grid */
+        .excel-guide-master-wrapper .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .excel-guide-master-wrapper .feature-box {
+            background: rgba(8, 20, 12, 0.7);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .excel-guide-master-wrapper .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color, #00ff87);
+        }
+
+        .excel-guide-master-wrapper .feature-box:hover {
+            transform: translateY(-6px);
+            background: rgba(16, 124, 65, 0.15);
+            box-shadow: 0 15px 35px var(--glow-color, rgba(0, 255, 135, 0.25));
+            border-color: var(--accent-color, #00ff87);
+        }
+
+        .excel-guide-master-wrapper .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .excel-guide-master-wrapper .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .excel-guide-master-wrapper .feature-desc {
+            font-size: 0.9rem;
+            color: #a3c9b2;
+            line-height: 1.6;
+        }
+
+        /* Options & Steps */
+        .excel-guide-master-wrapper .option-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 135, 0.1);
+        }
+
+        .excel-guide-master-wrapper .option-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #00ff87;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .excel-guide-master-wrapper .steps-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .excel-guide-master-wrapper .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 3px solid #00ff87;
+        }
+
+        .excel-guide-master-wrapper .step-num {
+            background: linear-gradient(135deg, #107c41, #00ff87);
+            color: #000;
+            font-weight: 800;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .excel-guide-master-wrapper .step-text {
+            font-size: 0.9rem;
+            color: #d1e8d9;
+            line-height: 1.5;
+        }
+
+        .excel-guide-master-wrapper .step-text strong {
+            color: #fff;
+        }
+
+        /* Pro Tips Card */
+        .excel-guide-master-wrapper .pro-tips-card {
+            background: linear-gradient(135deg, rgba(16, 124, 65, 0.15), rgba(0, 242, 254, 0.1));
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            position: relative;
+        }
+
+        .excel-guide-master-wrapper .tip-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .excel-guide-master-wrapper .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #e2f5ea;
+            line-height: 1.5;
+        }
+
+        .excel-guide-master-wrapper .tip-bullet {
+            color: #00ff87;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .excel-guide-master-wrapper .title { font-size: 2rem; }
+            .excel-guide-master-wrapper .subtitle { font-size: 0.95rem; }
+            .excel-guide-master-wrapper .glass-card { padding: 20px; }
+        }
+    </style>
+
+    <!-- Background Glows -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <!-- MAIN WRAPPER CONTENT -->
+    <div class="excel-container">
+
+        <!-- HERO HEADER CONTAINER -->
+        <div class="glass-card hero">
+            <span class="hero-badge">📊 Excel & Image Converter Pro</span>
+            <h1 class="title">Ultimate Excel Suite</h1>
+            <p class="subtitle">
+                Convert Excel spreadsheets to PDF, extract PDF tables to Excel, and seamlessly transform & edit your images with high accuracy!
+            </p>
+        </div>
+
+        <!-- FEATURES GRID CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <h2>Core Conversion Features</h2>
+            </div>
+
+            <div class="grid">
+                <!-- Feature 1: Excel to PDF -->
+                <div class="feature-box" style="--accent-color: #00ff87; --glow-color: rgba(0, 255, 135, 0.25);">
+                    <div class="feature-icon">📊➔📄</div>
+                    <div class="feature-title">Excel ➔ PDF</div>
+                    <div class="feature-desc">Apni XLS / XLSX Excel spreadsheets ko instant, clean aur perfectly aligned PDF documents mein badlein.</div>
+                </div>
+
+                <!-- Feature 2: PDF to Excel -->
+                <div class="feature-box" style="--accent-color: #00f2fe; --glow-color: rgba(0, 242, 254, 0.25);">
+                    <div class="feature-icon">📄➔📊</div>
+                    <div class="feature-title">PDF ➔ Excel</div>
+                    <div class="feature-desc">PDF documents ke tables aur data ko editable Excel sheets (.xlsx) mein accurate extract karein.</div>
+                </div>
+
+                <!-- Feature 3: Images to PDF -->
+                <div class="feature-box" style="--accent-color: #ff007f; --glow-color: rgba(255, 0, 127, 0.25);">
+                    <div class="feature-icon">🖼️➔📄</div>
+                    <div class="feature-title">Images ➔ PDF</div>
+                    <div class="feature-desc">Single ya multiple photos, scans aur documents ko high-quality PDF mein convert karein.</div>
+                </div>
+
+                <!-- Feature 4: Images to Images -->
+                <div class="feature-box" style="--accent-color: #7928ca; --glow-color: rgba(121, 40, 202, 0.25);">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">Images ➔ Images</div>
+                    <div class="feature-desc">Image formats badlein (JPG, PNG, WebP) aur photos ki quality, size aur filters customize karein.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOW TO USE CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">🛠️</div>
+                <h2>Quick Conversion Guide</h2>
+            </div>
+
+            <!-- Option 1: Excel & PDF Operations -->
+            <div class="option-container">
+                <div class="option-title">
+                    <span>🟢</span> Excel ➔ PDF & PDF ➔ Excel Conversions
+                </div>
+                <div class="steps-list">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><strong>Select Mode:</strong> Dashboard par "Excel ➔ PDF" ya "PDF ➔ Excel" choose karein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><strong>Upload File:</strong> Apni Excel sheet (.xlsx/.xls) ya PDF document upload karein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-text"><strong>Convert & Download:</strong> "Convert" par click karein aur instant converted file download karein!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2: Image Conversion -->
+            <div class="option-container">
+                <div class="option-title" style="color: #00f2fe;">
+                    <span>🖼️</span> Images ➔ PDF & Image Conversion
+                </div>
+                <div class="steps-list">
+                    <div class="step-item" style="border-left-color: #00f2fe;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">1</div>
+                        <div class="step-text"><strong>Add Images:</strong> Photos upload karein aur zaroorat ke hisaab se order set karein.</div>
+                    </div>
+                    <div class="step-item" style="border-left-color: #00f2fe;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">2</div>
+                        <div class="step-text"><strong>Format & Quality:</strong> Images ko PDF banayein ya kisi doosre image format mein export karein.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRO TIPS CONTAINER -->
+        <div class="glass-card pro-tips-card">
+            <div class="section-header">
+                <div class="section-icon">💡</div>
+                <h2 style="background: linear-gradient(90deg, #00ff87, #60efff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pro-Tips For Better Results</h2>
+            </div>
+            <div class="tip-list">
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Table Formatting:</strong> PDF ➔ Excel convert karte waqt clear, readable tables wali PDF se best output milta hai.</div>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>High Quality Export:</strong> Excel ➔ PDF banate waqt aapka layout exact original sheet jaisa maintain rehta hai.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ==================== ULTIMATE EXCEL CONVERTER SECTION END ==================== -->
+
+
+
+
+
+
+
+  
 </div>
 
 <!-- PAGE 2: WORKSPACE -->
