@@ -158,9 +158,15 @@ body {
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
 }
 
-/* DARK MODE */
-body.no-bg::before {
-  display: none;
+/* 🔥 SOLID BLACK DARK MODE FIX */
+body.dark-mode {
+  background-color: #000000 !important; /* Pure Black Background */
+  color: #ffffff !important;
+}
+
+/* Dark Mode enable hone par background orbs ko chhupa dega */
+body.dark-mode .bg-orb {
+  display: none !important;
 }
 
 /* Header */
@@ -1055,10 +1061,12 @@ function openAbout() {
 function toggleDarkMode() {
   let body = document.body;
   let btn = document.getElementById("darkBtn");
-  body.classList.toggle("no-bg");
 
-  // Button text change
-  if (body.classList.contains("no-bg")) {
+  // 'dark-mode' class toggle karein
+  body.classList.toggle("dark-mode");
+
+  // Button ka text aur background black handle karein
+  if (body.classList.contains("dark-mode")) {
     btn.innerText = "Light Mode";
   } else {
     btn.innerText = "Dark Mode";
