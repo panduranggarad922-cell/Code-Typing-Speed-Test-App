@@ -316,6 +316,461 @@ button span{
      <a href="privacy.html" style="color:white; margin:0 10px; opacity:0.7; text-decoration:none;">Privacy Policy</a>
      <a href="contact.html" style="color:white; margin:0 10px; opacity:0.7; text-decoration:none;">Contact</a>
 
+
+
+
+
+
+
+
+<!-- ==================== MAIN INDEX SUITE MASTER SECTION START ==================== -->
+<div class="index-guide-master-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+        /* Master Container Scope */
+        .index-guide-master-wrapper {
+            font-family: 'Poppins', sans-serif;
+            background-color: #070913;
+            color: #ffffff;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            margin: 20px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .index-guide-master-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Multi-Color Ambient Background Orbs */
+        .index-guide-master-wrapper .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.45;
+            z-index: 0;
+            animation: floatOrb 12s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .index-guide-master-wrapper .orb-1 {
+            width: 380px; height: 380px;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            top: -60px; left: -60px;
+        }
+
+        .index-guide-master-wrapper .orb-2 {
+            width: 380px; height: 380px;
+            background: linear-gradient(45deg, #00ff87, #00f2fe);
+            bottom: -60px; right: -60px;
+            animation-delay: -6s;
+        }
+
+        .index-guide-master-wrapper .orb-3 {
+            width: 300px; height: 300px;
+            background: linear-gradient(45deg, #ffb703, #fb8500);
+            top: 45%; left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.2;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 35px) scale(1.08); }
+        }
+
+        /* Inner Content Container */
+        .index-guide-master-wrapper .main-container {
+            max-width: 1150px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Panel Base */
+        .index-guide-master-wrapper .glass-card {
+            background: rgba(255, 255, 255, 0.035);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .index-guide-master-wrapper .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Hero Header */
+        .index-guide-master-wrapper .hero {
+            text-align: center;
+            padding: 50px 25px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .index-guide-master-wrapper .hero-badge {
+            display: inline-block;
+            padding: 7px 20px;
+            background: linear-gradient(90deg, #00f2fe, #4facfe);
+            color: #000;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+        }
+
+        .index-guide-master-wrapper .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.25;
+            background: linear-gradient(135deg, #ffffff 10%, #00f2fe 40%, #ff007f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .index-guide-master-wrapper .subtitle {
+            font-size: 1.1rem;
+            color: #b5b5c9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 4 Main App Navigation Cards Grid */
+        .index-guide-master-wrapper .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        .index-guide-master-wrapper .app-card {
+            background: rgba(15, 17, 32, 0.8);
+            border-radius: 22px;
+            padding: 28px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.35s ease;
+        }
+
+        .index-guide-master-wrapper .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: var(--card-accent, #00f2fe);
+        }
+
+        .index-guide-master-wrapper .app-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--card-accent, #00f2fe);
+            box-shadow: 0 15px 35px var(--card-glow, rgba(0, 242, 254, 0.3));
+        }
+
+        .index-guide-master-wrapper .app-icon {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .index-guide-master-wrapper .app-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .index-guide-master-wrapper .app-desc {
+            font-size: 0.9rem;
+            color: #a2a2bd;
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+
+        .index-guide-master-wrapper .app-launch-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--card-accent, #00f2fe);
+            color: #000000;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--card-glow, rgba(0, 242, 254, 0.3));
+        }
+
+        .index-guide-master-wrapper .app-launch-btn:hover {
+            filter: brightness(1.15);
+            transform: scale(1.02);
+        }
+
+        /* Section Titles */
+        .index-guide-master-wrapper .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .index-guide-master-wrapper .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ffffff, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .index-guide-master-wrapper .section-icon {
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Features List Grid */
+        .index-guide-master-wrapper .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .index-guide-master-wrapper .feature-item {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid #00f2fe;
+        }
+
+        .index-guide-master-wrapper .feature-item h3 {
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .index-guide-master-wrapper .feature-item p {
+            font-size: 0.88rem;
+            color: #b0b0c8;
+            line-height: 1.5;
+        }
+
+        /* Step by Step Guide */
+        .index-guide-master-wrapper .steps-container {
+            display: grid;
+            gap: 14px;
+        }
+
+        .index-guide-master-wrapper .step-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.025);
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .index-guide-master-wrapper .step-badge {
+            background: linear-gradient(135deg, #00f2fe, #ff007f);
+            color: #fff;
+            font-weight: 800;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .index-guide-master-wrapper .step-text {
+            font-size: 0.92rem;
+            color: #d8d8ea;
+            line-height: 1.5;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .index-guide-master-wrapper .title { font-size: 2rem; }
+            .index-guide-master-wrapper .subtitle { font-size: 0.95rem; }
+            .index-guide-master-wrapper .glass-card { padding: 20px; }
+            .index-guide-master-wrapper .apps-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <!-- Background Animated Glow Orbs -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+
+        <!-- HERO BANNER -->
+        <div class="glass-card hero">
+            <span class="hero-badge">🌐 All-In-One Document Station</span>
+            <h1 class="title">Pro Document & Image Conversion Suite</h1>
+            <p class="subtitle">
+                Aapke sabhi documents aur images ko Instant Convert, Edit aur Optimize karne ka ultimate Hub. Fast, 100% Secure, aur Web-Browser based conversion tools.
+            </p>
+        </div>
+
+        <!-- 4 MAIN APP CONVERTER COLORFUL BOXES -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">🚀</div>
+                <h2>Choose Conversion App</h2>
+            </div>
+
+            <div class="apps-grid">
+                <!-- APP 1: PDF SUITE -->
+                <div class="app-card" style="--card-accent: #ff007f; --card-glow: rgba(255, 0, 127, 0.35);">
+                    <div>
+                        <div class="app-icon">📕</div>
+                        <div class="app-title">PDF Converter Pro</div>
+                        <div class="app-desc">
+                            Images se Instant High-Quality PDF banayein, PDF se Images extract karein, watermark and compression adjust karein.
+                        </div>
+                    </div>
+                    <!-- APNI PEHLI APP FILE KA NAME "href" ME BADLEIN -->
+                    <a href="pdf-tool.html" class="app-launch-btn">Open PDF Tool ➔</a>
+                </div>
+
+                <!-- APP 2: EXCEL SUITE -->
+                <div class="app-card" style="--card-accent: #00ff87; --card-glow: rgba(0, 255, 135, 0.35);">
+                    <div>
+                        <div class="app-icon">📊</div>
+                        <div class="app-title">Excel Suite Pro</div>
+                        <div class="app-desc">
+                            Excel Spreadsheets (XLSX, XLS) ko clean PDF documents ya image slides mein badlein, data auto-align karein.
+                        </div>
+                    </div>
+                    <!-- APNI DOOSRI APP FILE KA NAME "href" ME BADLEIN -->
+                    <a href="excel-tool.html" class="app-launch-btn">Open Excel Tool ➔</a>
+                </div>
+
+                <!-- APP 3: WORD/DOC CONVERTER -->
+                <div class="app-card" style="--card-accent: #00f2fe; --card-glow: rgba(0, 242, 254, 0.35);">
+                    <div>
+                        <div class="app-icon">📝</div>
+                        <div class="app-title">Word Document Suite</div>
+                        <div class="app-desc">
+                            DOCX / Word documents ko standard PDF ya formatted web documents mein secure conversion ke saath convert karein.
+                        </div>
+                    </div>
+                    <!-- APNI TEESRI APP FILE KA NAME "href" ME BADLEIN -->
+                    <a href="word-tool.html" class="app-launch-btn">Open Word Tool ➔</a>
+                </div>
+
+                <!-- APP 4: IMAGE STUDIO -->
+                <div class="app-card" style="--card-accent: #ffb703; --card-glow: rgba(255, 183, 3, 0.35);">
+                    <div>
+                        <div class="app-icon">🖼️</div>
+                        <div class="app-title">Image Studio & Editor</div>
+                        <div class="app-desc">
+                            JPG, PNG, WebP image formats convert karein, brightness, contrast adjust karein aur photo cropper use karein.
+                        </div>
+                    </div>
+                    <!-- APNI CHAUTHI APP FILE KA NAME "href" ME BADLEIN -->
+                    <a href="image-tool.html" class="app-launch-btn">Open Image Tool ➔</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADSENSE HIGH-QUALITY INFORMATIVE CONTENT SECTION -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <h2>Why Use Our Document Suite?</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item" style="border-left-color: #ff007f;">
+                    <h3>🔒 Privacy & Browser Processing</h3>
+                    <p>Aapke files aur personal data bilkul safe hain. Extraction aur processing directly aapke client browser mein hoti hai.</p>
+                </div>
+
+                <div class="feature-item" style="border-left-color: #00ff87;">
+                    <h3>⚡ Ultra Fast Conversion</h3>
+                    <p>Server-side waiting time bina 1-Click instant conversion logic jisse aapke multiple documents secondon mein process ho jate hain.</p>
+                </div>
+
+                <div class="feature-item" style="border-left-color: #00f2fe;">
+                    <h3>🗜️ Smart File Compression</h3>
+                    <p>Document quality maintain rakhte hue exact Live Estimated Size control aur quality compress slider facility.</p>
+                </div>
+
+                <div class="feature-item" style="border-left-color: #ffb703;">
+                    <h3>📱 Fully Responsive Layout</h3>
+                    <p>Mobile screens, tablets, aur desktops par perfectly optimize hone wala dynamic UI experience.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOW IT WORKS (ADSENSE FRIENDLY USER GUIDE) -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">🛠️</div>
+                <h2>Quick Start Guide</h2>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-row">
+                    <div class="step-badge">1</div>
+                    <div class="step-text"><strong>Tool Select Karein:</strong> Upar diye gaye 4 app cards me se aapko jo document convert/edit karna hai use select karein.</div>
+                </div>
+                <div class="step-row">
+                    <div class="step-badge">2</div>
+                    <div class="step-text"><strong>File Upload Karein:</strong> Apne device se PDF, Excel, Word ya Image file select karke upload karein.</div>
+                </div>
+                <div class="step-row">
+                    <div class="step-badge">3</div>
+                    <div class="step-text"><strong>Customize & Edit:</strong> Output quality, filters, custom text watermark ya layout set karein.</div>
+                </div>
+                <div class="step-row">
+                    <div class="step-badge">4</div>
+                    <div class="step-text"><strong>Download Output:</strong> "Download" button par click karke apni high-quality converted file save karein.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ==================== MAIN INDEX SUITE MASTER SECTION END ==================== -->
+
+
+
+
+
+
+
+
+     
          <h1>About Use</h1>
      <p>⭐</p>
     <h2>𝙄𝙈𝘼𝙂𝙀𝙎 ⇄  𝙋𝘿𝙁</h2>
