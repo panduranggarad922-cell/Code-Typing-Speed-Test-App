@@ -404,19 +404,27 @@ body {
 .cropper-drag-box { pointer-events: none !important; }
 .crop-mode-active .cropper-drag-box { pointer-events: auto !important; touch-action: none !important; }
 
+/* ===== PDF ===== */
 .pdf-logo{
     color:#E53935;
     font-size:42px;
     filter:
-        drop-shadow(0 2px 2px rgba(240, 237, 237, 0.7))
-        drop-shadow(0 0 4px rgba(252, 251, 251, 0.4));
+        drop-shadow(0 2px 2px rgba(0,0,0,.7))
+        drop-shadow(0 0 4px rgba(0,0,0,.4));
 }
+
+/* ===== Images ===== */
 .img-logo{
     color:#ffffff;
     font-size:40px;
-    filter: drop-shadow(2px 2px 3px rgba(0,0,0,.7));
+    filter:
+        drop-shadow(2px 2px 3px rgba(0,0,0,.7));
+}    
+.pdf-logo{
+    font-size:42px;
+    color:#E53935; /* PPT ke liye alag color */
+    -webkit-text-stroke:0.2px rgba(255, 255, 255, 0.973);
 }
-
 </style>
 </head>
 <body>
