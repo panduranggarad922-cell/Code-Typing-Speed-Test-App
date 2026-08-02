@@ -6,17 +6,32 @@
 <title>Ultimate Pro PDF Suite</title>
 
 <!-- External Core Libraries -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Google Fonts Added for Text Editing -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Roboto&family=Lato&family=Montserrat&family=Oswald&family=Raleway&family=Poppins&family=Nunito&family=Ubuntu&family=Playfair+Display&family=Merriweather&family=Pacifico&family=Dancing+Script&family=Caveat&family=Anton&family=Lobster&family=Bebas+Neue&family=Fjalla+One&family=Teko&family=Righteous&display=swap" rel="stylesheet">
 
 <style>
+:root {
+  --bg-deep: #09090b;
+  --card-glass: rgba(16, 18, 27, 0.7);
+  --accent-cyan: #00f0ff;
+  --accent-pink: #ff007c;
+  --text-light: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-glow: rgba(0, 240, 255, 0.25);
+}
+
 body {
   margin: 0;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: white;
-  background: #09090b;
+  background: var(--bg-deep);
   overflow-x: hidden;
   user-select: none;
 }
@@ -68,15 +83,14 @@ body {
   color: white;
   backdrop-filter: blur(10px);
 }
-.back-btn { left: 10px; background: rgba(255, 0, 85, 0.8); }
-.home-btn { right: 10px; background: rgba(0, 150, 255, 0.8); }
+.back-btn { left: 10px; background: transparent; }
+.home-btn { right: 10px; background: rgba(255, 98, 0, 0.8); }
 .next-preview-btn { 
   right: 15px; 
-  background: linear-gradient(45deg, #00ffcc, #0096ff); 
+  background: linear-gradient(45deg, #f9e9e5, #ef1616); 
   color: black; 
 }
 
-/* Top Center Import Button Bar */
 .top-import-container {
   position: fixed;
   top: 10px;
@@ -86,6 +100,21 @@ body {
   display: flex;
   justify-content: center;
 }
+.main-import-btn {
+  background: linear-gradient(45deg, #00ffcc, #0096ff);
+  color: black;
+  font-weight: 800;
+  padding: 10px 22px;
+  border-radius: 25px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  border: none;
+  transition: transform 0.2s;
+}
+.main-import-btn:active { transform: scale(0.96); }
 
 .workspace-wrapper {
   position: relative;
@@ -187,267 +216,239 @@ body {
 }
 .action-overlay button:hover { background: #ff0055; }
 
-/* Movable Layers & Selection States */
+/* DYNAMIC OVERLAY LAYERS */
 .movable-layer {
   position: absolute;
   cursor: move;
-  border: 2px dashed transparent;
-  padding: 8px;
+  border: 1.5px dashed transparent; 
+  padding: 6px;
   user-select: none;
-  z-index: 9999;
-  background: transparent;
-  display: none;
+  z-index: 100;
   transform-origin: center center;
   touch-action: none;
-  border-radius: 8px;
-  transition: border-color 0.2s, background 0.2s;
+  display: inline-block;
+  pointer-events: auto;
 }
-.movable-layer.active { display: inline-block; }
-.movable-layer.selected { 
-  border-color: #00ffcc; 
+.movable-layer.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
   background: rgba(0,0,0,0.4); 
-}
-
-#movableTextLayer {
-  font-size: 28px;
-  color: white;
-  font-weight: bold;
-  font-family: Arial, sans-serif;
-  white-space: nowrap;
 }
 
 .layer-handle {
   position: absolute;
   width: 28px;
   height: 28px;
-  background: #00ffcc;
-  color: black;
   border-radius: 50%;
   display: none;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  font-weight: bold;
-  box-shadow: 0 0 10px rgba(0,0,0,0.8);
-  z-index: 10000;
-  touch-action: none;
+  z-index: 101;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
-.movable-layer.selected .layer-handle {
-  display: flex;
+.movable-layer.selected .layer-handle { display: flex; }
+
+.handle-delete { top: -14px; left: -14px; background: #ff4a4a; color: white; cursor: pointer; }
+/* Ek single dot jo dono kaam karega */
+.handle-resize { 
+  bottom: -10px; 
+  right: -10px; 
+  background: #00f0ff; 
+  border: 2px solid #ffffff; 
+  width: 16px !important; 
+  height: 16px !important; 
+  cursor: nwse-resize; 
+}
+/* Rotate handle ki ab zarurat nahi hai */
+.handle-rotate { display: none !important; }
+
+/* In-place Text Editing */
+
+.editable-text-overlay:focus {
+  border-color: var(--accent-cyan);
+}
+/* In-place Text Editing */
+.editable-text-overlay {
+  background: transparent;
+  border: 1px dashed transparent; /* Phele border hide rahegi */
+  color: white;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  text-align: center;
+  font-weight: 800;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  margin: 0;
+  padding: 5px 10px;
+  display: inline-block;
+  min-width: 30px;
+  pointer-events: auto;
+  white-space: pre; /* Text auto next-line me nahi jayega, Width badhegi. Enter dabane par hi neeche jayega */
 }
 
-.handle-rotate { top: -16px; left: 50%; transform: translateX(-50%); cursor: grab; }
-.handle-resize { bottom: -16px; right: -16px; cursor: nwse-resize; }
-.handle-delete { top: -16px; right: -16px; background: #ff0055; color: white; cursor: pointer; }
-
-.cropper-point {
-  width: 20px !important;
-  height: 20px !important;
-  background-color: #00ffcc !important;
-  opacity: 0.95 !important;
-  border-radius: 50% !important;
-  border: 2px solid #000 !important;
+/* Border sirf tab dikhegi jab text box select (click) hoga */
+.movable-layer.selected .editable-text-overlay {
+  border-color: rgba(255, 255, 255, 0.5);
 }
-.cropper-line { background-color: #f8fcfb !important; }
-.cropper-view-box { outline: 2px dashed #f9fcfc !important; }
-
-/* Panels */
+.editable-text-overlay:focus {
+  border-color: var(--accent-cyan) !important;
+}
+/* EDIT PANEL */
 .edit-panel {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  background: #0f0f11;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding: 10px 0;
+  background: rgba(10, 10, 20, 0.95);
+  border-top: 1px solid var(--border-glow);
+  backdrop-filter: blur(20px);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
-
-.main-import-btn {
-  background: linear-gradient(45deg, #00ffcc, #0096ff);
-  color: black;
-  font-weight: 800;
-  padding: 10px 22px;
-  border-radius: 25px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  box-shadow: /* 0 4px 15px rgba(0,255,204,0.3) */none;
-  border: none;
-  transition: transform 0.2s;
-}
-.main-import-btn:active { transform: scale(0.96); }
-
-/* Horizontal Scrollable Tools Row */
-.tool-row {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  overflow-x: auto;
-  padding: 5px 15px;
-  gap: 15px;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.tool-row::-webkit-scrollbar { display: none; }
-
-.tool-row button {
-  background: transparent;
-  border: none;
-  color: #a1a1aa;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.tool-row button.active, .tool-row button:hover { color: #00ffcc; }
-.tool-row button:disabled { opacity: 0.3; cursor: not-allowed; color: #52525b; }
 
 .sub-panel {
   display: none;
-  background: #18181b;
-  padding: 15px;
-  gap: 15px;
+  padding: 15px 20px;
+  background: var(--card-glass);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   overflow-x: auto;
+  gap: 20px;
   align-items: center;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
+.sub-panel::-webkit-scrollbar { display: none; }
 .sub-panel.active { display: flex; }
 
-.slider-group { display: flex; flex-direction: column; gap: 5px; min-width: 120px; text-align: center; }
-.slider-group input { accent-color: #00ffcc; width: 100px; }
+.slider-box { display: flex; flex-direction: column; gap: 6px; min-width: 130px; text-align: center; }
+.slider-box label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.slider-box input[type="range"] { width: 100%; accent-color: var(--accent-cyan); cursor: pointer; }
 
-.filter-btn {
-  padding: 8px 16px;
-  background: #27272a;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  white-space: nowrap;
+.filter-card {
+  flex: 0 0 85px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; border-radius: 12px; padding: 6px; border: 1px solid transparent; transition: all 0.2s;
 }
+.filter-card:hover, .filter-card.active { border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.08); }
+.filter-preview-box { width: 70px; height: 70px; border-radius: 10px; background-size: cover; background-position: center; border: 1px solid rgba(255, 255, 255, 0.1); }
+.filter-card span { font-size: 11px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
 
+.tool-bar {
+  display: flex; overflow-x: auto; padding: 12px 15px; gap: 22px; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.tool-bar::-webkit-scrollbar { display: none; }
+.tool-btn {
+  background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; transition: color 0.2s;
+}
+.tool-btn i { font-size: 20px; }
+.tool-btn.active, .tool-btn:hover { color: var(--accent-cyan); }
+.tool-btn:disabled { opacity: 0.3; cursor: not-allowed; color: #52525b; }
+
+/* Text Customization Elements */
+.text-controls { display: flex; gap: 10px; align-items: center; background: #1e1e2d; padding: 5px 10px; border-radius: 8px; }
+.text-controls select, .text-controls input[type="color"] { background: transparent; color: white; border: 1px solid var(--border-glow); border-radius: 4px; padding: 4px; outline: none;}
+.text-controls select option { background: #1e1e2d; color: white; }
+.text-controls input[type="color"] { width: 35px; height: 30px; padding: 0; cursor: pointer; }
+
+/* Color Adjust Elements */
+.color-swatch-container { display: flex; gap: 15px; align-items: center; }
+.color-swatch { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); transition: all 0.2s; flex-shrink: 0;}
+.color-swatch.active { border: 2px solid white; box-shadow: 0 0 12px var(--accent-cyan); transform: scale(1.1); }
+
+/* Advanced Effects */
+.effect-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; min-width: 70px; }
+.effect-icon { width: 55px; height: 55px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; font-size: 22px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; color: var(--text-light); }
+.effect-btn:hover .effect-icon { border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); }
+.effect-btn span { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+/* Loader */
+.loader-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(5, 5, 15, 0.85); backdrop-filter: blur(20px); z-index: 99999;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.loader-overlay.show { opacity: 1; pointer-events: auto; }
+.spinner {
+  width: 60px; height: 60px; border: 4px solid rgba(0, 240, 255, 0.15); border-top-color: var(--accent-cyan);
+  border-right-color: var(--accent-pink); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text { font-weight: 700; font-size: 16px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* Drafts & Previews */
 .draft-card {
-  background: #141416;
-  border: 1px solid white/* rgba(255,255,255,0.08) */;
-  border-radius: 16px;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  margin-bottom: 15px;
+  background: #141416; border: 1px solid white; border-radius: 16px; padding: 15px;
+  display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 15px;
 }
 .draft-left { display: flex; align-items: center; gap: 15px; }
-.draft-thumb {
-  width: 75px;
-  height: 75px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 2px solid white/* rgba(255,255,255,0.1) */;
-}
+.draft-thumb { width: 75px; height: 75px; object-fit: cover; border-radius: 12px; border: 2px solid white; }
 .draft-details h4 { margin: 0 0 5px 0; font-size: 16px; color: white; }
 .draft-meta { font-size: 12px; color: #71717a; display: flex; gap: 10px; flex-wrap: wrap; }
 .draft-actions { display: flex; flex-direction: column; gap: 8px; }
-.draft-actions button {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-}
+.draft-actions button { padding: 6px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; }
 .btn-cont { background: #00ffcc; color: black; }
 .btn-del { background: rgba(255,0,85,0.2); color: #ff0055; }
 
-.text-input-field {
-  background: #27272a;
-  border: 1px solid #3f3f46;
-  color: white;
-  padding: 8px 9px;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-#pdfPreview, #pdfToImgPreview {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
-}
-.preview-item-wrapper {
-  position: relative;
-  background: #141416;
-  border-radius: 10px;
-  padding: 5px;
-}
+#pdfPreview, #pdfToImgPreview { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top: 20px; }
+.preview-item-wrapper { position: relative; background: #141416; border-radius: 10px; padding: 5px; }
 .preview-item-wrapper img { width: 100%; border-radius: 8px; }
-.preview-delete-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: rgba(255,0,85,0.9);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  font-weight: bold;
+.preview-delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,0,85,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+
+.back-to-index { position: fixed; top: 10px; left: 10px; background: transparent; border: none; color: white; font-size: 30px; cursor: pointer; padding: 0; z-index: 9999; }
+
+/* Cropper touch fix */
+.cropper-container, .cropper-wrap-box, .cropper-canvas { touch-action: pan-x pan-y !important; }
+.cropper-drag-box { pointer-events: none !important; }
+.crop-mode-active .cropper-drag-box { pointer-events: auto !important; touch-action: none !important; }
+
+.pdf-logo{
+    color:#E53935;
+    font-size:42px;
+    filter:
+        drop-shadow(0 2px 2px rgba(0,0,0,.7))
+        drop-shadow(0 0 4px rgba(0,0,0,.4));
+}
+.img-logo{
+    color:#ffffff;
+    font-size:40px;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,.7));
 }
 
-.back-to-index {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 30px;
-  cursor: pointer;
-  padding: 0;
-  z-index: 9999;
-}
-
-/* Selected Image par Touch Scroll Allow Karne Ke Liye Fix */
-.cropper-container, 
-.cropper-wrap-box, 
-.cropper-canvas {
-  touch-action: pan-x pan-y !important;
-}
-
-.cropper-drag-box {
-  pointer-events: none !important;
-}
-
-/* Jab Crop Mode ON ho tabhi Cropper drag accept kare */
-.crop-mode-active .cropper-drag-box {
-  pointer-events: auto !important;
-  touch-action: none !important;
-}
 </style>
 </head>
 <body>
 
+<div id="loaderModal" class="loader-overlay">
+  <div class="spinner"></div>
+  <div id="loaderText" class="loader-text">Processing...</div>
+</div>
+
+<input type="file" id="pipInput" accept="image/*" onchange="spawnPipOverlay(event)" style="display:none;">
+
 <!-- PAGE 1: MAIN DASHBOARD -->
 <div id="page1" class="page active">
-    <button class="back-to-index" onclick="window.location.href='index.html'">←</button>
+  <button class="back-to-index" onclick="window.location.href='index.html'">←</button>
   <div class="header">... 𝙋𝘿𝙁  ⇄  𝙄𝙈𝘼𝙂𝙀𝙎 ...</div>
   <div style="margin: 30px 0;">
-    <h2 >𝙄𝙈𝘼𝙂𝙀𝙎 ⇉  𝙋𝘿𝙁</h2>
-    <button class="dash-btn" onclick="startNewProject()"> 🖼  ➔  📕 <br></button>
-    <h2 >𝙋𝘿𝙁  ⇉  𝙄𝙈𝘼𝙂𝙀𝙎</h2>
-    <button class="dash-btn" onclick="showPage(4)">📕  ➔  🖼 <br></button>
+
+    <h2>𝙄𝙈𝘼𝙂𝙀𝙎 ⇉  𝙋𝘿𝙁</h2>
+   <button class="dash-btn" onclick="startNewProject()">
+    <i class="fa-solid fa-images img-logo"></i>
+    ➜
+    <i class="fa-solid fa-file-pdf pdf-logo"></i>
+</button>
+
+
+    <h2>𝙋𝘿𝙁  ⇉  𝙄𝙈𝘼𝙂𝙀𝙎</h2>
+   <button class="dash-btn" onclick="showPage(4)">
+    <i class="fa-solid fa-file-pdf pdf-logo"></i>
+    ➜
+    <i class="fa-solid fa-images img-logo"></i>
+</button>
+
   </div>
 
   <hr style="border-color: rgba(255,255,255,0.05); margin: 30px 0;">
@@ -458,476 +459,11 @@ body {
   </div>
   
   <div id="draftList"></div>
-
-
-
-
-
-
-
-<!-- ==================== ULTIMATE PRO PDF SUITE SECTION START ==================== -->
-<div class="pdf-guide-master-wrapper">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
-
-        /* Master Container Scope */
-        .pdf-guide-master-wrapper {
-            font-family: 'Poppins', sans-serif;
-            background-color: #060713;
-            color: #ffffff;
-            padding: 40px 20px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 30px;
-            margin: 40px 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .pdf-guide-master-wrapper * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Ambient Glowing Background Orbs (Scoped inside Master Wrapper) */
-        .pdf-guide-master-wrapper .ambient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.5;
-            z-index: 0;
-            animation: floatOrb 10s infinite alternate ease-in-out;
-            pointer-events: none;
-        }
-
-        .pdf-guide-master-wrapper .orb-1 {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(45deg, #ff007f, #7928ca);
-            top: -50px;
-            left: -50px;
-        }
-
-        .pdf-guide-master-wrapper .orb-2 {
-            width: 350px;
-            height: 350px;
-            background: linear-gradient(45deg, #00f2fe, #4facfe);
-            bottom: -50px;
-            right: -50px;
-            animation-delay: -5s;
-        }
-
-        .pdf-guide-master-wrapper .orb-3 {
-            width: 250px;
-            height: 250px;
-            background: linear-gradient(45deg, #00ff87, #60efff);
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.25;
-        }
-
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(25px, 30px) scale(1.08); }
-        }
-
-        /* Inner Content Container */
-        .pdf-guide-master-wrapper .pdf-container {
-            max-width: 1100px;
-            width: 100%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Glassmorphism Panel Base */
-        .pdf-guide-master-wrapper .glass-card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 24px;
-            padding: 35px;
-            margin-bottom: 35px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .pdf-guide-master-wrapper .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
-        }
-
-        /* Hero Header */
-        .pdf-guide-master-wrapper .hero {
-            text-align: center;
-            padding: 50px 25px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .pdf-guide-master-wrapper .hero-badge {
-            display: inline-block;
-            padding: 6px 18px;
-            background: linear-gradient(90deg, #ff007f, #7928ca);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
-        }
-
-        .pdf-guide-master-wrapper .title {
-            font-size: 2.8rem;
-            font-weight: 900;
-            line-height: 1.2;
-            background: linear-gradient(135deg, #ffffff 20%, #00f2fe 60%, #ff007f 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .pdf-guide-master-wrapper .subtitle {
-            font-size: 1.1rem;
-            color: #b3b3cb;
-            max-width: 750px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        /* Section Titles */
-        .pdf-guide-master-wrapper .section-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .pdf-guide-master-wrapper .section-header h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, #fff, #a0a0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .pdf-guide-master-wrapper .section-icon {
-            font-size: 1.8rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Feature Grid */
-        .pdf-guide-master-wrapper .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .pdf-guide-master-wrapper .feature-box {
-            background: rgba(15, 16, 32, 0.6);
-            border-radius: 20px;
-            padding: 22px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .pdf-guide-master-wrapper .feature-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--accent-color, #00f2fe);
-        }
-
-        .pdf-guide-master-wrapper .feature-box:hover {
-            transform: translateY(-6px);
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 15px 35px var(--glow-color, rgba(0, 242, 254, 0.25));
-            border-color: var(--accent-color, #00f2fe);
-        }
-
-        .pdf-guide-master-wrapper .feature-icon {
-            font-size: 1.8rem;
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-
-        .pdf-guide-master-wrapper .feature-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-
-        .pdf-guide-master-wrapper .feature-desc {
-            font-size: 0.9rem;
-            color: #a0a0be;
-            line-height: 1.6;
-        }
-
-        /* Options & Steps */
-        .pdf-guide-master-wrapper .option-container {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 18px;
-            padding: 22px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .pdf-guide-master-wrapper .option-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #00f2fe;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .pdf-guide-master-wrapper .steps-list {
-            list-style: none;
-            display: grid;
-            gap: 12px;
-        }
-
-        .pdf-guide-master-wrapper .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border-left: 3px solid #ff007f;
-        }
-
-        .pdf-guide-master-wrapper .step-num {
-            background: linear-gradient(135deg, #ff007f, #7928ca);
-            color: #fff;
-            font-weight: 700;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            flex-shrink: 0;
-        }
-
-        .pdf-guide-master-wrapper .step-text {
-            font-size: 0.9rem;
-            color: #d1d1e0;
-            line-height: 1.5;
-        }
-
-        .pdf-guide-master-wrapper .step-text strong {
-            color: #fff;
-        }
-
-        /* Pro Tips Card */
-        .pdf-guide-master-wrapper .pro-tips-card {
-            background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(121, 40, 202, 0.15));
-            border: 1px solid rgba(255, 0, 127, 0.3);
-            position: relative;
-        }
-
-        .pdf-guide-master-wrapper .tip-list {
-            list-style: none;
-            display: grid;
-            gap: 12px;
-        }
-
-        .pdf-guide-master-wrapper .tip-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: #e2e2fe;
-            line-height: 1.5;
-        }
-
-        .pdf-guide-master-wrapper .tip-bullet {
-            color: #00ff87;
-            font-size: 1.1rem;
-            line-height: 1;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .pdf-guide-master-wrapper .title { font-size: 2rem; }
-            .pdf-guide-master-wrapper .subtitle { font-size: 0.95rem; }
-            .pdf-guide-master-wrapper .glass-card { padding: 20px; }
-        }
-    </style>
-
-    <!-- Background Glows -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-    <div class="ambient-orb orb-3"></div>
-
-    <!-- MAIN WRAPPER CONTENT -->
-    <div class="pdf-container">
-
-        <!-- HERO HEADER CONTAINER -->
-        <div class="glass-card hero">
-            <span class="hero-badge">⚡ Next-Gen Document Suite</span>
-            <h1 class="title">Ultimate Pro PDF Suite</h1>
-            <p class="subtitle">
-                Transform, Edit, and Master your PDFs with ultra-fast speed, live compression, neon filters, and auto-draft saving!
-            </p>
-        </div>
-
-        <!-- FEATURES GRID CONTAINER -->
-        <div class="glass-card">
-            <div class="section-header">
-                <div class="section-icon">🚀</div>
-                <h2>Ultimate Power Features</h2>
-            </div>
-
-            <div class="grid">
-                <div class="feature-box" style="--accent-color: #00f2fe; --glow-color: rgba(0, 242, 254, 0.25);">
-                    <div class="feature-icon">🔁</div>
-                    <div class="feature-title">Two-Way Magic</div>
-                    <div class="feature-desc">Images se PDF banayein ya kisi bhi PDF file se high-res images instant extract karein.</div>
-                </div>
-
-                <div class="feature-box" style="--accent-color: #ff007f; --glow-color: rgba(255, 0, 127, 0.25);">
-                    <div class="feature-icon">🎨</div>
-                    <div class="feature-title">Pro Image Studio</div>
-                    <div class="feature-desc">Brightness, Contrast, Saturation aur Blur ko apney hisaab se live fine-tune karein.</div>
-                </div>
-
-                <div class="feature-box" style="--accent-color: #00ff87; --glow-color: rgba(0, 255, 135, 0.25);">
-                    <div class="feature-icon">🎭</div>
-                    <div class="feature-title">Neon & Retro Filters</div>
-                    <div class="feature-desc">1-Click Grayscale, Sepia, Retro Invert aur Neon Hue filters se photos ko stylish banayein.</div>
-                </div>
-
-                <div class="feature-box" style="--accent-color: #7928ca; --glow-color: rgba(121, 40, 202, 0.25);">
-                    <div class="feature-icon">✍️</div>
-                    <div class="feature-title">Text & PIP Watermark</div>
-                    <div class="feature-desc">Custom text ya Picture-in-Picture (PIP) se apna watermark drag, rotate aur resize karke lagayein.</div>
-                </div>
-
-                <div class="feature-box" style="--accent-color: #f5d020; --glow-color: rgba(245, 208, 32, 0.25);">
-                    <div class="feature-icon">🗜️</div>
-                    <div class="feature-title">Live Compression Control</div>
-                    <div class="feature-desc">Slider se PDF size adjust karein aur live estimated size (KB/MB) pehle hi dekhein.</div>
-                </div>
-
-                <div class="feature-box" style="--accent-color: #ff4d4d; --glow-color: rgba(255, 77, 77, 0.25);">
-                    <div class="feature-icon">💾</div>
-                    <div class="feature-title">Smart Auto-Drafts</div>
-                    <div class="feature-desc">Kaam beech mein chhut gaya? App aapke project ko automatically save karke rakhti hai!</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- HOW TO USE CONTAINER -->
-        <div class="glass-card">
-            <div class="section-header">
-                <div class="section-icon">📖</div>
-                <h2>Kaise Use Karein?</h2>
-            </div>
-
-            <!-- Option A -->
-            <div class="option-container">
-                <div class="option-title">
-                    <span>🖼️</span> Option A: Images ➔ PDF (Photo se PDF)
-                </div>
-                <div class="steps-list">
-                    <div class="step-item">
-                        <div class="step-num">1</div>
-                        <div class="step-text"><strong>Select Photos:</strong> Dashboard par "Images ➔ PDF" par click karke apni photos add karein.</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-num">2</div>
-                        <div class="step-text"><strong>Edit & Customize:</strong> Adjust, Filters, Text, PIP ya Crop tools se images polish karein aur ⇇ ⇉ se reorder karein.</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-num">3</div>
-                        <div class="step-text"><strong>Set Quality:</strong> "Next" click karein, filename likhein aur compression slider se file size fix karein.</div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-num">4</div>
-                        <div class="step-text"><strong>Download:</strong> "Download Compressed PDF" dabayein aur aapki file ready!</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Option B -->
-            <div class="option-container">
-                <div class="option-title" style="color: #ff007f;">
-                    <span>📕</span> Option B: PDF ➔ Images (PDF se Photo Extraction)
-                </div>
-                <div class="steps-list">
-                    <div class="step-item" style="border-left-color: #00f2fe;">
-                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">1</div>
-                        <div class="step-text"><strong>Upload File:</strong> Dashboard par "PDF ➔ Images" select karke PDF file choose karein.</div>
-                    </div>
-                    <div class="step-item" style="border-left-color: #00f2fe;">
-                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">2</div>
-                        <div class="step-text"><strong>Auto Scan:</strong> App turant aapke har page ko high-resolution image me badal degi.</div>
-                    </div>
-                    <div class="step-item" style="border-left-color: #00f2fe;">
-                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">3</div>
-                        <div class="step-text"><strong>Export Images:</strong> Single page ke liye "Save Page" ya ek sath sabhi ke liye "Download All Images" par click karein.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PRO TIPS CONTAINER -->
-        <div class="glass-card pro-tips-card">
-            <div class="section-header">
-                <div class="section-icon" style="background: rgba(255, 0, 127, 0.2);">💡</div>
-                <h2 style="background: linear-gradient(90deg, #ff007f, #00ff87); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pro-Tips For Power Users</h2>
-            </div>
-            <div class="tip-list">
-                <div class="tip-item">
-                    <span class="tip-bullet">✦</span>
-                    <div><strong>Instant Undo/Redo:</strong> Edit karte waqt galti se bachein—Undo (↰) aur Redo (↱) controls ka use karein.</div>
-                </div>
-                <div class="tip-item">
-                    <span class="tip-bullet">✦</span>
-                    <div><strong>Professional Branding:</strong> PIP Feature ka use karke apne business ka transparent PNG logo kisi bhi page par watermark ki tarah set karein.</div>
-                </div>
-                <div class="tip-item">
-                    <span class="tip-bullet">✦</span>
-                    <div><strong>Clear Storage Easily:</strong> Drafts me purane projects save hote hain. Local memory free karne ke liye 'Clear All' ka use karein.</div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
-<!-- ==================== ULTIMATE PRO PDF SUITE SECTION END ==================== -->
-
-
-
-
-
-
-
-  
 </div>
 
 <!-- PAGE 2: WORKSPACE -->
 <div id="page2" class="page">
-  <button class="back-btn" onclick="goHome()">⬅ <!-- Home --></button>
+  <button class="back-btn" onclick="goHome()">← <!-- Home --></button>
   
   <!-- TOP CENTER IMPORT BUTTON -->
   <div class="top-import-container">
@@ -941,74 +477,102 @@ body {
   
   <div class="workspace-wrapper" id="workspaceWrapper">
     <div class="image-container" id="imageContainer"></div>
-    
-    <!-- Movable Text Layer -->
-    <div id="movableTextLayer" class="movable-layer">
-      <div class="layer-handle handle-rotate" ontouchstart="initTransform(event, 'text', 'rotate')" onmousedown="initTransform(event, 'text', 'rotate')">🔄</div>
-      <div class="layer-handle handle-delete" onclick="deleteLayer('text')" ontouchstart="deleteLayer('text')">✕</div>
-      <span id="textValDisplay">Custom Text</span>
-      <div class="layer-handle handle-resize" ontouchstart="initTransform(event, 'text', 'resize')" onmousedown="initTransform(event, 'text', 'resize')">↘️</div>
-    </div>
-
-    <!-- Movable PIP Layer -->
-    <div id="movablePipLayer" class="movable-layer">
-      <div class="layer-handle handle-rotate" ontouchstart="initTransform(event, 'pip', 'rotate')" onmousedown="initTransform(event, 'pip', 'rotate')">🔄</div>
-      <div class="layer-handle handle-delete" onclick="deleteLayer('pip')" ontouchstart="deleteLayer('pip')">✕</div>
-      <img id="pipImgDisplay" style="width:100px; height:100px; object-fit:contain; display:block; pointer-events:none;">
-      <div class="layer-handle handle-resize" ontouchstart="initTransform(event, 'pip', 'resize')" onmousedown="initTransform(event, 'pip', 'resize')">↘️</div>
-    </div>
   </div>
 
-  <!-- EDIT PANEL ENGINE TRAY -->
+  <!-- UPGRADED EDIT PANEL (Img editor style) -->
   <div id="editPanel" class="edit-panel">
 
     <div id="adjustPanel" class="sub-panel">
-      <button onclick="bakeAdvancedEffects()" style="background:#00ffcc; color:black; border-radius:8px; padding:4px 10px; font-weight:bold;">Apply</button>
-      <div class="slider-group"><label>Brightness</label><input type="range" id="brightRange" min="-50" max="50" value="0" oninput="updateFilters()"></div>
-      <div class="slider-group"><label>Contrast</label><input type="range" id="contrastRange" min="-50" max="50" value="0" oninput="updateFilters()"></div>
-      <div class="slider-group"><label>Saturation</label><input type="range" id="satRange" min="-50" max="50" value="0" oninput="updateFilters()"></div>
-      <div class="slider-group"><label>Blur</label><input type="range" id="blurRange" min="0" max="10" value="0" oninput="updateFilters()"></div>
+      <button onclick="bakeAdvancedEffects()" style="background:var(--accent-cyan); color:black; border-radius:8px; padding:6px 14px; font-weight:bold; border:none;">Apply</button>
+      <div class="slider-box"><label>Brightness</label><input type="range" id="adj_brightness" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Contrast</label><input type="range" id="adj_contrast" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Saturation</label><input type="range" id="adj_saturation" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Blur</label><input type="range" id="adj_blur" min="0" max="20" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Hue Rotate</label><input type="range" id="adj_hue" min="0" max="360" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Sepia</label><input type="range" id="adj_sepia" min="0" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Invert</label><input type="range" id="adj_invert" min="0" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Grayscale</label><input type="range" id="adj_grayscale" min="0" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Opacity</label><input type="range" id="adj_opacity" min="0" max="100" value="100" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Warmth</label><input type="range" id="adj_warmth" min="-50" max="50" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Exposure</label><input type="range" id="adj_exposure" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Vibrance</label><input type="range" id="adj_vibrance" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <button onclick="resetAdjustments()" style="background:var(--accent-pink); color:white; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">Reset</button>
     </div>
 
-    <div id="filterPanel" class="sub-panel">
-      <button class="filter-btn" onclick="applyQuickFilter('none')">Original</button>
-      <button class="filter-btn" onclick="applyQuickFilter('grayscale(100%)')">Grayscale</button>
-      <button class="filter-btn" onclick="applyQuickFilter('sepia(100%)')">Sepia</button>
-      <button class="filter-btn" onclick="applyQuickFilter('invert(100%)')">Retro Invert</button>
-      <button class="filter-btn" onclick="applyQuickFilter('hue-rotate(90deg)')">Neon Hue</button>
+    <div id="filterPanel" class="sub-panel"></div>
+
+    <div id="advancedEffectsPanel" class="sub-panel">
+      <div style="display:flex; gap:15px;" id="advancedEffectsGrid"></div>
+    </div>
+    
+    <div id="colorPanel" class="sub-panel">
+      <div class="slider-box" style="min-width: 140px;">
+        <label>Intensity / Glow</label>
+        <input type="range" id="selectiveColorSlider" min="-100" max="100" value="0" onchange="applySelectiveColor()">
+      </div>
+      <div class="color-swatch-container" id="colorSwatchesContainer"></div>
     </div>
 
-    <div id="textPanel" class="sub-panel">
-      <input type="text" id="overlayText" placeholder="Type text..." class="text-input-field">
-      <button onclick="spawnMovableText()" style="background:#00ffcc; color:black; padding:5px 14px; border-radius:8px; font-weight:bold;">Place</button>
-      <button onclick="burnLayerToImage('text')" style="background:#ffcc00; color:black; padding:5px 14px; border-radius:8px; font-weight:bold;">✔Save</button>
-      <button onclick="deleteLayer('text')" style="background:rgba(255,0,85,0.2); color:#ff0055; padding:5px 14px; border-radius:8px; font-weight:bold; border:none;">Remove</button>
-    </div>
+   <div id="textPanel" class="sub-panel">
+  <div class="text-controls">
+    <textarea id="textInputVal" placeholder="Type here..." oninput="updateLiveText()" style="background: transparent; border: none; color: white; outline: none; width: 160px; height: 35px; resize: none; font-family: inherit; vertical-align: middle;"></textarea>
+    <input type="color" id="textColorVal" value="#ffffff" oninput="updateLiveText()">
+    <select id="textFontVal" onchange="updateLiveText()">
+      <option value="Inter">𝘐𝘯𝘵𝘦𝘳</option> <option value="Roboto">𝗥𝗼𝗯𝗼𝘁𝗼</option>
+      <option value="Lato">𝙇𝙖𝙩𝙤</option> <option value="Montserrat">𝙈𝙤𝙣𝙩𝙨𝙚𝙧𝙧𝙖𝙩</option>
+      <option value="Oswald">𝗢𝘀𝘄𝗮𝗹𝗱</option> <option value="Raleway">𝑅𝒶𝓁𝑒𝓌𝒶𝓎</option>
+      <option value="Poppins">𝗣𝗼𝗽𝗽𝗶𝗻𝘀</option> <option value="Nunito">𝓝𝓾𝓷𝓲𝓽𝓸</option>
+      <option value="Ubuntu">𝗨𝗯𝘂𝗻𝘁𝘂</option> <option value="Playfair Display">𝓟𝓵𝓪𝔂𝓯𝓪𝓲𝓻</option>
+      <option value="Merriweather">𝓜𝓮𝓻𝓻𝓲𝔀𝓮𝓪𝓽𝓱𝓮𝓻</option> <option value="Pacifico">𝓟𝓪𝓬𝓲𝓯𝓲𝓬𝓸</option>
+      <option value="Dancing Script">𝒟𝒶𝓃𝒸𝒾𝓃𝑔 𝒮𝒸𝓇𝒾𝓅𝓉</option> <option value="Caveat">𝒞𝒶𝓋𝑒𝒶𝓉</option>
+      <option value="Anton">𝗔𝗻𝘁𝗼𝗻</option> <option value="Lobster">𝓛𝓸𝓫𝓼𝓽𝓮𝓻</option>
+      <option value="Bebas Neue">𝘽𝙚𝙗𝙖𝙨 𝙉𝙚𝙪𝙚</option> <option value="Fjalla One">𝙁𝙟𝙖𝙡𝙡𝙖</option>
+      <option value="Teko">𝙏𝙚𝙠𝙤</option> <option value="Righteous">𝓡𝓲 themed</option>
+    </select>
+  </div>
+  <button onclick="placeTextRightArrow()" style="background:var(--accent-cyan); color:#000; border:none; padding:8px 16px; border-radius:8px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px;">
+    Done <i class="fa-solid fa-check"></i>
+  </button>
+</div>
 
     <div id="pipPanel" class="sub-panel">
-      <label style="background:#27272a; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:bold;">🏞️
-        <input type="file" accept="image/*" onchange="spawnMovablePip(event)" style="display:none;">
+      <label style="background:var(--accent-cyan); color:black; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:bold;">
+        <i class="fa-solid fa-images"></i> Add Image PIP
+        <input type="file" accept="image/*" onchange="spawnPipOverlay(event)" style="display:none;">
       </label>
-      <button onclick="burnLayerToImage('pip')" style="background:#ffcc00; color:black; padding:8px 14px; border-radius:8px; font-weight:bold;">✔Save</button>
-      <button onclick="deleteLayer('pip')" style="background:rgba(255,0,85,0.2); color:#ff0055; padding:8px 14px; border-radius:8px; font-weight:bold; border:none;">Remove</button>
     </div>
 
     <div id="cropPanel" class="sub-panel">
-      <span style="color:#a1a1aa; font-size:14px;">Drag corners directly to crop</span>
-      <button onclick="confirmCropBake()" style="background:#00ffcc; color:black; font-weight:bold; border-radius:8px; padding:8px 16px; font-size:12px;">✔ Apply Crop</button>
+      <button class="tool-btn" onclick="setCanvasRatio('free')"><i class="fa-solid fa-expand"></i>Free</button>
+      <button class="tool-btn" onclick="setCanvasRatio(NaN)"><i class="fa-solid fa-image"></i>Original</button>
+      <button class="tool-btn" onclick="setCanvasRatio(1)"><i class="fa-solid fa-square"></i>1:1</button>
+      <button class="tool-btn" onclick="setCanvasRatio(4/5)"><i class="fa-solid fa-rectangle-ad"></i>4:5</button>
+      <button class="tool-btn" onclick="setCanvasRatio(9/16)"><i class="fa-solid fa-mobile-screen"></i>9:16</button>
+      <button class="tool-btn" onclick="setCanvasRatio(16/9)"><i class="fa-solid fa-desktop"></i>16:9</button>
+      <div style="flex:1;"></div>
+      <button onclick="applyCrop()" style="background:var(--accent-cyan); color:#000; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;">✔ Apply</button>
+      <button onclick="cancelCrop()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;">Cancel</button>
     </div>
 
     <!-- Scrollable Tools List -->
-    <div class="tool-row">
-      <button id="undoBtn" onclick="executeUndo()" disabled><span>↰</span>Undo</button>
-      <button id="redoBtn" onclick="executeRedo()" disabled><span>↱</span>Redo</button>
-      <button onclick="smartDeleteAction()" style="color:#ff0055;"><span>🗑️</span>Delete</button>
-      <button onclick="switchSubPanel('adjustPanel')"><span>⚙️</span>Adjust</button>
-      <button onclick="switchSubPanel('filterPanel')"><span>🎭</span>Filters</button>
-      <button onclick="switchSubPanel('textPanel')"><span>✍️</span>Text</button>
-      <button onclick="switchSubPanel('pipPanel')"><span>🖼️</span>PIP</button>
-      <button onclick="triggerCropMode()"><span>✂️</span>Crop</button>
-      <button onclick="rotateCoreImg()"><span>🔄</span>Rotate</button>
+    <div class="tool-bar">
+      <button id="undoBtn" class="tool-btn" onclick="executeUndo()" disabled><i class="fa-solid fa-arrow-rotate-left"></i>Undo</button>
+      <button id="redoBtn" class="tool-btn" onclick="executeRedo()" disabled><i class="fa-solid fa-arrow-rotate-right"></i>Redo</button>
+      <button class="tool-btn" onclick="moveSelectedImage(-1)"> <i class="fa-solid fa-arrow-left"></i> Left</button>
+      <button class="tool-btn" onclick="moveSelectedImage(1)"> <i class="fa-solid fa-arrow-right"></i> Right</button>
+      <div style="width:1px; height:30px; background:rgba(255,255,255,0.2); margin:0 5px;"></div>
+       
+      <button class="tool-btn" onclick="openColorPanel()"><i class="fa-solid fa-palette"></i>Colors</button>
+      <button class="tool-btn" onclick="switchSubPanel('adjustPanel')"><i class="fa-solid fa-sliders"></i>Adjust</button>
+      <button class="tool-btn" onclick="switchSubPanel('filterPanel')"><i class="fa-solid fa-wand-magic"></i>Filter</button>
+      <button class="tool-btn" onclick="switchSubPanel('advancedEffectsPanel')"><i class="fa-solid fa-wand-magic-sparkles"></i>Effects</button>
+      <button class="tool-btn" onclick="startCropMode()"><i class="fa-solid fa-crop-simple"></i>Crop</button>
+      <button class="tool-btn" onclick="activateTextTool()"><i class="fa-solid fa-font"></i>Text</button>
+      <button class="tool-btn" onclick="document.getElementById('pipInput').click()"><i class="fa-solid fa-images"></i>PIP</button>
+      <button class="tool-btn" onclick="rotateCoreImg(90)"><i class="fa-solid fa-rotate-right"></i>Rotate</button>
+      <button class="tool-btn" onclick="flipCoreImg('h')"><i class="fa-solid fa-arrows-left-right"></i>Flip H</button>
+      <button class="tool-btn" onclick="flipCoreImg('v')"><i class="fa-solid fa-arrows-up-down"></i>Flip V</button>
+      <button class="tool-btn" onclick="smartDeleteAction()" style="color:var(--accent-pink);"><i class="fa-solid fa-trash"></i>Delete</button>
     </div>
   </div>
 </div>
@@ -1022,13 +586,13 @@ body {
     <input type="text" id="pdfName" placeholder="Enter PDF Name..." style="background:white; border:1px solid #e5f504; color:black; padding:12px; width:80%; max-width:300px; border-radius:10px; font-size:16px; margin-bottom:15px;">
     
     <div style="background:#141416; padding:15px; border-radius:12px; max-width:350px; margin: 10px auto; border: 1px solid rgba(255,255,255,0.05);">
-      <div style="margin-bottom:10px; font-weight:bold; color:#00ffcc;">Estimated Size: <span id="livePdfSizeDisplay">0 KB</span></div>
+      <div style="margin-bottom:10px; font-weight:bold; color:#ff2f00;">Estimated Size: <span id="livePdfSizeDisplay">0 KB</span></div>
       <label style="font-size:14px; color:#a1a1aa;">Compress Quality Control</label>
-      <input type="range" id="compressSlider" min="10" max="100" value="90" style="width:100%; accent-color:#00ffcc;" onchange="calculateLivePdfMetrics()">
+      <input type="range" id="compressSlider" min="10" max="100" value="90" style="width:100%; accent-color:#ff1100;" onchange="calculateLivePdfMetrics()">
     </div>
 
     <div style="margin: 20px 0;">
-      <button onclick="generateAndSavePDF()" style="background:#00ffcc; color:black; font-weight:bold; padding:12px 24px; border-radius:30px; border:none; cursor:pointer; font-size:16px;">Download Compressed PDF</button>
+      <button onclick="generateAndSavePDF()" style="background:#ff3300; color:black; font-weight:bold; padding:12px 24px; border-radius:30px; border:none; cursor:pointer; font-size:16px;">Download PDF</button>
     </div>
   </div>
   <div id="pdfPreview"></div>
@@ -1037,7 +601,7 @@ body {
 <!-- PAGE 4: PDF TO IMAGE -->
 <div id="page4" class="page">
   <button class="back-btn" onclick="showPage(1)">⬅ Back</button>
-  <h2 style="margin-top:70px; text-align:center; font-weight:900; color:white;">📕 <!-- 𝙋𝘿𝙁 𝙏𝙤 𝙄𝙢𝙖𝙜𝙚 𝘾𝙪𝙣𝙫𝙚𝙧𝙩𝙚𝙧 --> PDF to Image Converter</h2>
+  <h2 style="margin-top:70px; text-align:center; font-weight:900; color:white;">📕 PDF to Image Converter</h2>
   
   <div style="text-align:center; margin:20px 0;">
     <label style="background:linear-gradient(45deg, #00ffcc, #0096ff); color:black;border:3px solid #fbfcfc; font-weight:bold; padding:14px 28px; border-radius:30px ; cursor:pointer; display:inline-block;">
@@ -1046,7 +610,7 @@ body {
     </label>
     <div id="conversionStatus" style="margin-top:10px; color:#a1a1aa;"></div>
     
-    <button id="downloadAllImagesBtn" onclick="downloadAllExtractedImages()" style="background:#ff0055; color:white; font-weight:bold; padding:10px 20px; border-radius:20px; border:none; margin-top:15px; display:none; cursor:pointer;">📥 Download All Images</button>
+    <button id="downloadAllImagesBtn" onclick="downloadAllExtractedImages()" style="background:red; color:white; font-weight:bold; padding:10px 20px; border-radius:20px; border:none; margin-top:15px; display:none; cursor:pointer;">📥 Download All Images</button>
   </div>
 
   <div id="pdfToImgPreview"></div>
@@ -1063,49 +627,110 @@ let extractedPdfPages = [];
 let undoStack = [];
 let redoStack = [];
 
-let layers = {
-  text: { relX: 0.1, relY: 0.4, rotation: 0, fontSize: 28 },
-  pip: { relX: 0.2, relY: 0.2, rotation: 0, width: 100, height: 100 }
-};
+let activeTarget = 'main';
+let globalZIndex = 100;
+
+const filterPresets = [
+  { name: 'Original', filter: 'none' },
+  { name: 'Soft Glow', filter: 'brightness(108%) contrast(104%) saturate(112%)' },
+  { name: 'Fair Glow', filter: 'brightness(118%) contrast(102%) saturate(108%)' },
+  { name: 'Glass Skin', filter: 'brightness(114%) contrast(106%) saturate(110%)' },
+  { name: 'Pink Glow', filter: 'brightness(110%) saturate(120%) hue-rotate(-6deg)' },
+  { name: 'Soft Red', filter: 'brightness(108%) contrast(106%) saturate(125%) hue-rotate(-18deg)' },
+  { name: 'Cyberpunk', filter: 'hue-rotate(180deg) contrast(130%) saturate(160%)' },
+  { name: '90s Retro', filter: 'sepia(40%) contrast(110%) brightness(105%) saturate(130%)' },
+  { name: 'Warm Gold', filter: 'sepia(25%) saturate(140%) brightness(108%)' },
+  { name: 'Cold Winter', filter: 'hue-rotate(190deg) saturate(80%) brightness(105%)' },
+  { name: 'Noir B&W', filter: 'grayscale(100%) contrast(150%)' },
+  { name: 'Emerald', filter: 'hue-rotate(80deg) saturate(140%)' },
+  { name: 'Sunset Glow', filter: 'sepia(50%) hue-rotate(-20deg) saturate(180%)' },
+  { name: 'Sepia Dream', filter: 'sepia(100%) contrast(90%)' },
+  { name: 'Neon Invert', filter: 'invert(100%) hue-rotate(180deg)' }
+];
+
+const colorTargets = [
+  { name: "Face / Skin", hue: 25, css: "#ffc8b4" },
+  { name: "Red", hue: 0, css: "#ff0000" },
+  { name: "Yellow", hue: 60, css: "#ffff00" },
+  { name: "Green", hue: 120, css: "#00ff00" },
+  { name: "Cyan", hue: 180, css: "#00ffff" },
+  { name: "Blue", hue: 240, css: "#0000ff" },
+  { name: "Magenta", hue: 300, css: "#ff00ff" }
+];
+let selectedColorTarget = 25; 
+let tempColorBaseSrc = null;
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  let max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max == min) { h = s = 0; } else {
+    let d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    } h /= 6;
+  } return [h * 360, s, l];
+}
+function hslToRgb(h, s, l) {
+  h /= 360; let r, g, b;
+  if (s == 0) { r = g = b = l; } else {
+    const hue2rgb = (p, q, t) => {
+      if(t < 0) t += 1; if(t > 1) t -= 1;
+      if(t < 1/6) return p + (q - p) * 6 * t;
+      if(t < 1/2) return q; if(t < 2/3) return p + (q - p) * (2/3 - t) * 6; return p;
+    }
+    let q = l < 0.5 ? l * (1 + s) : l + s - l * s; let p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1/3);
+  } return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+const snapEffects = [
+  {name: "HDR Pro",icon: "fa-image", type: "canvas", fn: (d) => {
+       const contrast = 1.22; const saturation = 1.18; const vibrance = 1.25; const brightness = 8; const clarity = 1.08; const glow = 6;
+       for (let i = 0; i < d.length; i += 4) { let r = d[i]; let g = d[i+1]; let b = d[i+2];
+        r += brightness; g += brightness; b += brightness;
+        r = ((r - 128) * contrast) + 128; g = ((g - 128) * contrast) + 128; b = ((b - 128) * contrast) + 128;
+       if (r < 90) r *= 1.12; if (g < 90) g *= 1.12; if (b < 90) b *= 1.12;
+       if (r > 210) r -= (r - 210) * 0.45; if (g > 210) g -= (g - 210) * 0.45; if (b > 210) b -= (b - 210) * 0.45;
+       const gray = (r + g + b) / 3; r = gray + (r - gray) * vibrance; g = gray + (g - gray) * saturation; b = gray + (b - gray) * vibrance;
+       r *= clarity; g *= clarity; b *= clarity; r += glow; g += glow * 0.8; b += glow * 0.6; r *= 1.02; g *= 1.01; b *= 0.99;
+       d[i] = Math.max(0, Math.min(255, r)); d[i+1] = Math.max(0, Math.min(255, g)); d[i+2] = Math.max(0, Math.min(255, b)); } } },
+  { name: "Portrait Blur", icon: "fa-user-large-slash", type: "canvas", fn: (d, w, h, ctx) => {
+      let tCan = document.createElement('canvas'); tCan.width=w; tCan.height=h;
+      let tCtx = tCan.getContext('2d'); tCtx.putImageData(new ImageData(d,w,h),0,0);
+      ctx.filter = 'blur(8px)'; ctx.drawImage(tCan,0,0); ctx.filter = 'none';
+      let g = ctx.createRadialGradient(w/2,h/2,w/5,w/2,h/2,w/1.2);
+      g.addColorStop(0,"rgba(255,255,255,1)"); g.addColorStop(1,"rgba(255,255,255,0)");
+      let mCan = document.createElement('canvas'); mCan.width=w; mCan.height=h;
+      let mCtx = mCan.getContext('2d'); mCtx.fillStyle=g; mCtx.fillRect(0,0,w,h);
+      mCtx.globalCompositeOperation='source-in'; mCtx.drawImage(tCan,0,0);
+      ctx.drawImage(mCan,0,0); return false; }},
+  { name: "VHS Tape", icon: "fa-compact-disc", type: "canvas", fn: (d, w, h, ctx) => { let c = new Uint8ClampedArray(d); for(let i=0; i<d.length; i+=4) if(i+32 < d.length) { d[i]=c[i+32]; } ctx.putImageData(new ImageData(d,w,h),0,0); ctx.fillStyle="rgba(0,0,0,0.2)"; for(let y=0; y<h; y+=3) ctx.fillRect(0,y,w,1); return false; } },
+  { name: "Film Grain", icon: "fa-braille", type: "canvas", fn: (d) => { for(let i=0; i<d.length; i+=4) { let n = (Math.random()-0.5)*40; d[i]=Math.min(255,Math.max(0,d[i]+n)); d[i+1]=Math.min(255,Math.max(0,d[i+1]+n)); d[i+2]=Math.min(255,Math.max(0,d[i+2]+n)); } } },
+  { name: "Dark Vignette", icon: "fa-circle-dot", type: "canvas", fn: (d, w, h, ctx) => { let g = ctx.createRadialGradient(w/2,h/2,w/4,w/2,h/2,w/1.2); g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,0.85)"); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); return false; } }
+];
+
+function showLoader(msg) {
+  document.getElementById("loaderText").innerText = msg;
+  document.getElementById("loaderModal").classList.add("show");
+}
+function hideLoader() { document.getElementById("loaderModal").classList.remove("show"); }
 
 function getDefaultSetting() {
   return { 
-    brightness: 0, 
-    contrast: 0, 
-    saturation: 0, 
-    blur: 0, 
+    brightness: 0, contrast: 0, saturation: 0, blur: 0,
+    hue: 0, sepia: 0, invert: 0, grayscale: 0, opacity: 100, warmth: 0, exposure: 0, vibrance: 0,
     rawFilter: 'none',
-    textLayer: { active: false, text: '', relX: 0.1, relY: 0.4, rotation: 0, fontSize: 28 },
-    pipLayer: { active: false, src: '', relX: 0.2, relY: 0.2, rotation: 0, width: 100, height: 100 }
+    dynamicLayers: {}, layerCounter: 0
   };
 }
 
-function selectLayer(type) {
-  if (type === 'text') {
-    document.getElementById("movableTextLayer").classList.add("selected");
-    document.getElementById("movablePipLayer").classList.remove("selected");
-  } else if (type === 'pip') {
-    document.getElementById("movablePipLayer").classList.add("selected");
-    document.getElementById("movableTextLayer").classList.remove("selected");
-  }
-}
-
-function deselectAllLayers() {
-  const tLayer = document.getElementById("movableTextLayer");
-  const pLayer = document.getElementById("movablePipLayer");
-  if (tLayer) tLayer.classList.remove("selected");
-  if (pLayer) pLayer.classList.remove("selected");
-}
-
 document.addEventListener("pointerdown", (e) => {
-  const tLayer = document.getElementById("movableTextLayer");
-  const pLayer = document.getElementById("movablePipLayer");
-  
-  if (tLayer && tLayer.contains(e.target)) return;
-  if (pLayer && pLayer.contains(e.target)) return;
-  if (e.target.closest('.sub-panel') || e.target.closest('.tool-row') || e.target.closest('.top-import-container')) return;
-
-  deselectAllLayers();
+  if (e.target.closest('.movable-layer') || e.target.closest('.sub-panel') || e.target.closest('.tool-bar') || e.target.closest('.top-import-container')) return;
+  document.querySelectorAll('.movable-layer').forEach(el => el.classList.remove('selected'));
+  activeTarget = 'main';
 });
 
 function recordState() {
@@ -1123,38 +748,22 @@ function executeUndo() {
   if (!undoStack.length) return;
   autoSaveCurrentFilterState();
   redoStack.push(JSON.stringify({
-    images: [...images],
-    settings: JSON.parse(JSON.stringify(imageSettings)),
-    currentIndex: currentIndex
+    images: [...images], settings: JSON.parse(JSON.stringify(imageSettings)), currentIndex: currentIndex
   }));
-
   const prevState = JSON.parse(undoStack.pop());
-  images = prevState.images;
-  imageSettings = prevState.settings;
-  currentIndex = prevState.currentIndex;
-
-  updateUndoRedoUI();
-  killCropper();
-  renderImages(currentIndex);
+  images = prevState.images; imageSettings = prevState.settings; currentIndex = prevState.currentIndex;
+  updateUndoRedoUI(); killCropper(); renderImages(currentIndex);
 }
 
 function executeRedo() {
   if (!redoStack.length) return;
   autoSaveCurrentFilterState();
   undoStack.push(JSON.stringify({
-    images: [...images],
-    settings: JSON.parse(JSON.stringify(imageSettings)),
-    currentIndex: currentIndex
+    images: [...images], settings: JSON.parse(JSON.stringify(imageSettings)), currentIndex: currentIndex
   }));
-
   const nextState = JSON.parse(redoStack.pop());
-  images = nextState.images;
-  imageSettings = nextState.settings;
-  currentIndex = nextState.currentIndex;
-
-  updateUndoRedoUI();
-  killCropper();
-  renderImages(currentIndex);
+  images = nextState.images; imageSettings = nextState.settings; currentIndex = nextState.currentIndex;
+  updateUndoRedoUI(); killCropper(); renderImages(currentIndex);
 }
 
 function updateUndoRedoUI() {
@@ -1179,29 +788,6 @@ function startNewProject() {
   renderImages();
 }
 
-function hideMovableLayers() {
-  const tLayer = document.getElementById("movableTextLayer");
-  const pLayer = document.getElementById("movablePipLayer");
-  if(tLayer) tLayer.classList.remove("active", "selected");
-  if(pLayer) pLayer.classList.remove("active", "selected");
-}
-
-function triggerCropMode() {
-  if(!cropper) return;
-  switchSubPanel('cropPanel');
-  const wrapper = document.getElementById("workspaceWrapper");
-  if(wrapper) wrapper.classList.add("crop-mode-active");
-  cropper.crop();
-  cropper.setDragMode("crop");
-}
-
-function killCropper() {
-  if (cropper) { cropper.destroy(); cropper = null; }
-  const wrapper = document.getElementById("workspaceWrapper");
-  if(wrapper) wrapper.classList.remove("crop-mode-active");
-  document.querySelectorAll(".sub-panel").forEach(p => p.classList.remove("active"));
-}
-
 function switchSubPanel(id) {
   const target = document.getElementById(id);
   const isOpen = target.classList.contains("active");
@@ -1210,17 +796,81 @@ function switchSubPanel(id) {
     const wrapper = document.getElementById("workspaceWrapper");
     if(wrapper) wrapper.classList.remove("crop-mode-active");
   }
+  if (id !== 'colorPanel') { tempColorBaseSrc = null; }
   
   document.querySelectorAll(".sub-panel").forEach(p => p.classList.remove("active"));
   if(!isOpen) target.classList.add("active");
 }
 
+function startCropMode() {
+  if(currentIndex < 0) return;
+  switchSubPanel('cropPanel');
+  const imgEl = document.querySelector(".image-box.selected img");
+  if(!cropper && imgEl) {
+    cropper = new Cropper(imgEl, {
+      viewMode: 1, 
+      dragMode: 'none',
+      autoCropArea: 1,
+      autoCrop: true, 
+      background: false, 
+      responsive: true, 
+      zoomable: false,
+      ready() { updateFiltersDisplay(); }
+    });
+  } else if(cropper) {
+    cropper.setDragMode("none");
+    cropper.crop();
+  }
+  const wrapper = document.getElementById("workspaceWrapper");
+  if(wrapper) wrapper.classList.add("crop-mode-active");
+}
+
+function cancelCrop() {
+  killCropper();
+}
+
+function killCropper() {
+  if (cropper) { cropper.destroy(); cropper = null; }
+  const wrapper = document.getElementById("workspaceWrapper");
+  if(wrapper) wrapper.classList.remove("crop-mode-active");
+  document.getElementById("cropPanel").classList.remove("active");
+}
+
+function setCanvasRatio(ratio) {
+  if(!cropper) startCropMode();
+  if(cropper) {
+    if(isNaN(ratio) && typeof ratio !== 'string') ratio = NaN;
+    if (ratio === 'free') cropper.setAspectRatio(NaN);
+    else cropper.setAspectRatio(ratio);
+  }
+}
+
+function applyCrop() {
+  if (!cropper) return;
+  recordState();
+  showLoader("Cropping Image...");
+  setTimeout(() => {
+    images[currentIndex] = cropper.getCroppedCanvas().toDataURL("image/jpeg", 0.95);
+    killCropper();
+    renderImages(currentIndex);
+    hideLoader();
+  }, 400);
+}
+
 function syncSlidersUI(idx) {
-  const settings = (idx >= 0 && imageSettings[idx]) ? imageSettings[idx] : getDefaultSetting();
-  document.getElementById("brightRange").value = settings.brightness || 0;
-  document.getElementById("contrastRange").value = settings.contrast || 0;
-  document.getElementById("satRange").value = settings.saturation || 0;
-  document.getElementById("blurRange").value = settings.blur || 0;
+  const set = (idx >= 0 && imageSettings[idx]) ? imageSettings[idx] : getDefaultSetting();
+  document.getElementById("adj_brightness").value = set.brightness || 0;
+  document.getElementById("adj_contrast").value = set.contrast || 0;
+  document.getElementById("adj_saturation").value = set.saturation || 0;
+  document.getElementById("adj_blur").value = set.blur || 0;
+  document.getElementById("adj_hue").value = set.hue || 0;
+  document.getElementById("adj_sepia").value = set.sepia || 0;
+  document.getElementById("adj_invert").value = set.invert || 0;
+  document.getElementById("adj_grayscale").value = set.grayscale || 0;
+  document.getElementById("adj_opacity").value = set.opacity ?? 100;
+  document.getElementById("adj_warmth").value = set.warmth || 0;
+  document.getElementById("adj_exposure").value = set.exposure || 0;
+  document.getElementById("adj_vibrance").value = set.vibrance || 0;
 }
 
 function importImages(e) {
@@ -1229,11 +879,16 @@ function importImages(e) {
   autoSaveCurrentFilterState();
   recordState();
   for(let file of files) {
-    const url = URL.createObjectURL(file);
-    images.push(url);
+    images.push(URL.createObjectURL(file));
     imageSettings.push(getDefaultSetting());
   }
-  currentIndex = 0; // 👈 Yahan change kiya hai: Ab hamesha pehli image (Index 0) select hogi
+  
+  // FIX: Force a Draft ID creation on first image import if it doesn't exist
+  if (!currentDraftId) {
+      currentDraftId = Date.now();
+  }
+  
+  currentIndex = 0; 
   renderImages(currentIndex);
 }
 
@@ -1241,7 +896,7 @@ function autoSaveCurrentFilterState() {
   saveCurrentLayersToSettings();
   if (cropper && currentIndex >= 0 && currentIndex < images.length) {
     const set = imageSettings[currentIndex];
-    if (set && (set.brightness !== 0 || set.contrast !== 0 || set.saturation !== 0 || set.blur !== 0 || set.rawFilter !== 'none')) {
+    if (set && (set.brightness!==0 || set.contrast!==0 || set.saturation!==0 || set.blur!==0 || set.rawFilter!=='none')) {
       applyBakeEffect(false); 
     }
   }
@@ -1249,75 +904,87 @@ function autoSaveCurrentFilterState() {
 
 function saveCurrentLayersToSettings() {
   if (currentIndex < 0 || !imageSettings[currentIndex]) return;
-  const tEl = document.getElementById("movableTextLayer");
-  const pEl = document.getElementById("movablePipLayer");
+  const set = imageSettings[currentIndex];
+  if(!set.dynamicLayers) return;
+  
+  document.querySelectorAll('.movable-layer').forEach(el => {
+    const id = el.id;
+    if(set.dynamicLayers[id]) {
+      if(set.dynamicLayers[id].type === 'text') {
+        const textNode = document.getElementById(id + "_span");
+        if(textNode) set.dynamicLayers[id].val = textNode.innerText;
+      }
+    }
+  });
+}
 
-  if (tEl.classList.contains("active")) {
-    imageSettings[currentIndex].textLayer = {
-      active: true,
-      text: document.getElementById("textValDisplay").innerText,
-      relX: layers.text.relX,
-      relY: layers.text.relY,
-      rotation: layers.text.rotation,
-      fontSize: layers.text.fontSize
-    };
+function bringToFront(layerId) {
+  globalZIndex++;
+  const el = document.getElementById(layerId);
+  if(el) el.style.zIndex = globalZIndex;
+}
+
+function renderDynamicLayer(layerId) {
+  const l = imageSettings[currentIndex].dynamicLayers[layerId];
+  if(!l) return;
+  
+  const box = document.querySelector(".image-box.selected .layer-container");
+  if(!box) return;
+
+  const div = document.createElement('div');
+  div.id = layerId;
+  div.style.borderRadius = "0px"; 
+  div.className = l.type === 'text' ? "movable-layer text-layer active" : "movable-layer pip-layer active";
+  
+if(l.type === 'text') {
+    div.innerHTML = `
+      <div class="layer-handle handle-delete" onclick="removeDynamicLayer('${layerId}')"><i class="fa-solid fa-xmark"></i></div>
+      <span id="${layerId}_span" style="font-size: ${l.fontSize}px; font-weight: 800; color: ${l.color}; white-space: pre; text-shadow: 0 2px 10px rgba(0,0,0,0.8); font-family: '${l.font}', sans-serif;">${l.val || 'New Text'}</span>
+      <div class="layer-handle handle-resize" onmousedown="initAdvancedTransform(event, '${layerId}', 'transform')" ontouchstart="initAdvancedTransform(event, '${layerId}', 'transform')"></div>
+    `;
+  } else {
+    div.innerHTML = `
+      <div class="layer-handle handle-delete" onclick="removeDynamicLayer('${layerId}')"><i class="fa-solid fa-xmark"></i></div>
+      <img id="${layerId}_img" src="${l.src}" style="width:${l.width}px; height:${l.height || l.width}px; object-fit:contain; display:block; pointer-events:none; border-radius: 0px !important;">
+      <div class="layer-handle handle-resize" onmousedown="initAdvancedTransform(event, '${layerId}', 'transform')" ontouchstart="initAdvancedTransform(event, '${layerId}', 'transform')"></div>
+    `;
   }
-  if (pEl.classList.contains("active")) {
-    imageSettings[currentIndex].pipLayer = {
-      active: true,
-      src: document.getElementById("pipImgDisplay").src,
-      relX: layers.pip.relX,
-      relY: layers.pip.relY,
-      rotation: layers.pip.rotation,
-      width: layers.pip.width,
-      height: layers.pip.height,
-      aspectRatio: layers.pip.aspectRatio || (layers.pip.width / layers.pip.height)
-    };
-  }
+  
+  box.appendChild(div);
+  
+  div.addEventListener('click', (ev) => {
+    if(ev.target.classList.contains('layer-handle') || ev.target.closest('.layer-handle')) return;
+    document.querySelectorAll('.movable-layer').forEach(el => el.classList.remove('selected'));
+    div.classList.add("selected");
+    bringToFront(layerId);
+    activeTarget = layerId;
+    if(l.type === 'text') {
+        switchSubPanel('textPanel');
+        const span = document.getElementById(layerId + "_span");
+        if(span) {
+          document.getElementById("textInputVal").value = span.innerText;
+          document.getElementById("textColorVal").value = l.color || "#000000";
+          document.getElementById("textFontVal").value = l.font || "Inter";
+        }
+    }
+  });
+
+  applyLayerTransform(layerId);
+  attachLayerDrag(layerId);
 }
 
 function restoreLayersFromSettings(idx) {
-  hideMovableLayers();
+  const box = document.querySelector(".image-box.selected .layer-container");
+  if(!box) return;
+  box.innerHTML = "";
+  
   if (idx < 0 || !imageSettings[idx]) return;
-
   const set = imageSettings[idx];
-  if (set.textLayer && set.textLayer.active) {
-    layers.text = { ...set.textLayer };
-    document.getElementById("textValDisplay").innerText = set.textLayer.text;
-    applyLayerTransform('text');
-    document.getElementById("movableTextLayer").classList.add("active");
-    attachLayerDrag('text');
-  }
+  if(!set.dynamicLayers) set.dynamicLayers = {};
 
-  if (set.pipLayer && set.pipLayer.active) {
-    layers.pip = { ...set.pipLayer };
-    document.getElementById("pipImgDisplay").src = set.pipLayer.src;
-    applyLayerTransform('pip');
-    document.getElementById("movablePipLayer").classList.add("active");
-    attachLayerDrag('pip');
-  }
-}
-
-function restoreLayersFromSettings(idx) {
-  hideMovableLayers();
-  if (idx < 0 || !imageSettings[idx]) return;
-
-  const set = imageSettings[idx];
-  if (set.textLayer && set.textLayer.active) {
-    layers.text = { ...set.textLayer };
-    document.getElementById("textValDisplay").innerText = set.textLayer.text;
-    applyLayerTransform('text');
-    document.getElementById("movableTextLayer").classList.add("active");
-    attachLayerDrag('text');
-  }
-
-  if (set.pipLayer && set.pipLayer.active) {
-    layers.pip = { ...set.pipLayer };
-    document.getElementById("pipImgDisplay").src = set.pipLayer.src;
-    applyLayerTransform('pip');
-    document.getElementById("movablePipLayer").classList.add("active");
-    attachLayerDrag('pip');
-  }
+  Object.keys(set.dynamicLayers).forEach(layerId => {
+    renderDynamicLayer(layerId);
+  });
 }
 
 function renderImages(selected = currentIndex) {
@@ -1329,7 +996,6 @@ function renderImages(selected = currentIndex) {
   if(images.length === 0) {
     container.innerHTML = `<div class="empty-box" style="width:100%; text-align:center; padding-top:100px; color:#a1a1aa;"><span>➕ No Images Added. Tap 'Import / Add Images' above.</span></div>`;
     document.getElementById("pdfBtn").style.display = "none";
-    hideMovableLayers();
     return;
   }
   document.getElementById("pdfBtn").style.display = "block";
@@ -1340,20 +1006,15 @@ function renderImages(selected = currentIndex) {
     box.innerHTML = `
       <span class="index-tag">${i + 1}</span>
       <div class="action-overlay">
-        <button onclick="shiftLeft(${i}, event)">⇇</button>
-        <button onclick="removeImage(${i}, event)">🗑</button>
-        <button onclick="shiftRight(${i}, event)">⇉</button>
+      
       </div>
       <img src="${src}">
+      <div class="layer-container" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
     `;
-    
     box.onclick = (e) => {
-      if(e.target.tagName === 'BUTTON') return;
+      if(e.target.tagName === 'BUTTON' || e.target.closest('.movable-layer')) return;
       if (currentIndex !== i) {
-        autoSaveCurrentFilterState();
-        killCropper();
-        currentIndex = i;
-        renderImages(currentIndex);
+        autoSaveCurrentFilterState(); killCropper(); currentIndex = i; renderImages(currentIndex);
       }
     };
     container.appendChild(box);
@@ -1363,176 +1024,289 @@ function renderImages(selected = currentIndex) {
     currentIndex = selected;
     syncSlidersUI(currentIndex);
     restoreLayersFromSettings(currentIndex);
+    renderFilterCards();
+    initColorPanel();
+    initAdvancedEffects();
     setTimeout(() => {
       const imgEl = document.querySelector(".image-box.selected img");
-      if (imgEl) initCropperWorkspace(imgEl);
+      if (imgEl && !cropper) {
+        imgEl.style.filter = buildFilterChain(imageSettings[currentIndex]);
+      }
     }, 60);
   }
 }
 
-function initCropperWorkspace(img) {
-  if(cropper) { cropper.destroy(); }
-  cropper = new Cropper(img, {
-    viewMode: 1, 
-    dragMode: 'none', 
-    autoCrop: false, 
-    background: false, 
-    responsive: true, 
-    checkOrientation: false,
-    zoomable: false,
-    zoomOnTouch: false,
-    zoomOnWheel: false,
-    movable: false,
-    scalable: false,
-    cropBoxMovable: true,
-    cropBoxResizable: true,
-    ready() {
-      updateFiltersDisplay();
-    }
-  });
-}
-
-function shiftLeft(idx, e) {
-  e.stopPropagation();
-  if(idx <= 0) return;
-  autoSaveCurrentFilterState();
-  recordState();
-  swapData(idx, idx - 1);
-  renderImages(idx - 1);
-}
-
-function shiftRight(idx, e) {
-  e.stopPropagation();
-  if(idx >= images.length - 1) return;
-  autoSaveCurrentFilterState();
-  recordState();
-  swapData(idx, idx + 1);
-  renderImages(idx + 1);
-}
-
-function swapData(i, j) {
-  [images[i], images[j]] = [images[j], images[i]];
-  [imageSettings[i], imageSettings[j]] = [imageSettings[j], imageSettings[i]];
-}
-
-function removeImage(idx, e) {
-  if(e && e.stopPropagation) e.stopPropagation();
-  recordState();
-  images.splice(idx, 1);
-  imageSettings.splice(idx, 1);
-  currentIndex = images.length - 1;
-  killCropper();
-  renderImages(currentIndex);
-}
+function shiftLeft(idx, e) { e.stopPropagation(); if(idx <= 0) return; autoSaveCurrentFilterState(); recordState(); swapData(idx, idx - 1); renderImages(idx - 1); }
+function shiftRight(idx, e) { e.stopPropagation(); if(idx >= images.length - 1) return; autoSaveCurrentFilterState(); recordState(); swapData(idx, idx + 1); renderImages(idx + 1); }
+function swapData(i, j) { [images[i], images[j]] = [images[j], images[i]]; [imageSettings[i], imageSettings[j]] = [imageSettings[j], imageSettings[i]]; }
+function removeImage(idx, e) { if(e && e.stopPropagation) e.stopPropagation(); recordState(); images.splice(idx, 1); imageSettings.splice(idx, 1); currentIndex = images.length - 1; killCropper(); renderImages(currentIndex); }
 
 function smartDeleteAction() {
-  const tLayer = document.getElementById("movableTextLayer");
-  const pLayer = document.getElementById("movablePipLayer");
-
-  if (tLayer && tLayer.classList.contains("selected")) {
-    deleteLayer('text');
+  if(activeTarget && activeTarget !== 'main' && document.getElementById(activeTarget)) {
+    removeDynamicLayer(activeTarget);
     return;
   }
-  if (pLayer && pLayer.classList.contains("selected")) {
-    deleteLayer('pip');
-    return;
-  }
-
   if (currentIndex < 0 || !images.length) return;
   removeImage(currentIndex, null);
 }
 
-function deleteLayer(type) {
+function removeDynamicLayer(layerId) {
   recordState();
-  if (type === 'text') {
-    const el = document.getElementById("movableTextLayer");
-    el.classList.remove("active", "selected");
-    if (imageSettings[currentIndex]) imageSettings[currentIndex].textLayer.active = false;
-  } else if (type === 'pip') {
-    const el = document.getElementById("movablePipLayer");
-    el.classList.remove("active", "selected");
-    if (imageSettings[currentIndex]) imageSettings[currentIndex].pipLayer.active = false;
+  const el = document.getElementById(layerId);
+  if(el) el.remove();
+  if(imageSettings[currentIndex] && imageSettings[currentIndex].dynamicLayers) {
+    delete imageSettings[currentIndex].dynamicLayers[layerId];
   }
+  activeTarget = 'main';
 }
 
-function rotateCoreImg() {
-  if(!cropper) return;
+function rotateCoreImg(deg = 90) {
+  if(currentIndex < 0) return;
   recordState();
-  cropper.rotate(90);
-  applyBakeEffect();
-  killCropper();
-  renderImages(currentIndex);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.height; canvas.height = img.width;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate((deg * Math.PI) / 180);
+    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+    images[currentIndex] = canvas.toDataURL("image/jpeg", 0.95);
+    killCropper();
+    renderImages(currentIndex);
+  };
+  img.src = images[currentIndex];
 }
 
-function confirmCropBake() {
-  if(!cropper) return;
+function flipCoreImg(dir) {
+  if(currentIndex < 0) return;
   recordState();
-  applyBakeEffect();
-  killCropper();
-  renderImages(currentIndex);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width; canvas.height = img.height;
+    ctx.translate(dir === 'h' ? canvas.width : 0, dir === 'v' ? canvas.height : 0);
+    ctx.scale(dir === 'h' ? -1 : 1, dir === 'v' ? -1 : 1);
+    ctx.drawImage(img, 0, 0);
+    images[currentIndex] = canvas.toDataURL("image/jpeg", 0.95);
+    killCropper(); renderImages(currentIndex);
+  };
+  img.src = images[currentIndex];
+}
+
+function resetAdjustments() {
+  if(currentIndex < 0 || !imageSettings[currentIndex]) return;
+  const set = imageSettings[currentIndex];
+  set.brightness = 0; set.contrast = 0; set.saturation = 0; set.blur = 0;
+  set.hue = 0; set.sepia = 0; set.invert = 0; set.grayscale = 0;
+  set.opacity = 100; set.warmth = 0; set.exposure = 0; set.vibrance = 0;
+  syncSlidersUI(currentIndex);
+  updateFiltersDisplay();
 }
 
 function updateFilters() {
   if(currentIndex < 0 || !imageSettings[currentIndex]) return;
-  imageSettings[currentIndex].brightness = Number(document.getElementById("brightRange").value);
-  imageSettings[currentIndex].contrast = Number(document.getElementById("contrastRange").value);
-  imageSettings[currentIndex].saturation = Number(document.getElementById("satRange").value);
-  imageSettings[currentIndex].blur = Number(document.getElementById("blurRange").value);
-  
+  const set = imageSettings[currentIndex];
+  set.brightness = Number(document.getElementById("adj_brightness").value);
+  set.contrast = Number(document.getElementById("adj_contrast").value);
+  set.saturation = Number(document.getElementById("adj_saturation").value);
+  set.blur = Number(document.getElementById("adj_blur").value);
+  set.hue = Number(document.getElementById("adj_hue").value);
+  set.sepia = Number(document.getElementById("adj_sepia").value);
+  set.invert = Number(document.getElementById("adj_invert").value);
+  set.grayscale = Number(document.getElementById("adj_grayscale").value);
+  set.opacity = Number(document.getElementById("adj_opacity").value);
+  set.warmth = Number(document.getElementById("adj_warmth").value);
+  set.exposure = Number(document.getElementById("adj_exposure").value);
+  set.vibrance = Number(document.getElementById("adj_vibrance").value);
   updateFiltersDisplay();
+}
+
+function buildFilterChain(set) {
+  if(!set) return 'none';
+  let chain = `brightness(${100 + Number(set.brightness||0) + Number(set.exposure||0)}%) ` +
+              `contrast(${100 + Number(set.contrast||0)}%) ` +
+              `saturate(${100 + Number(set.saturation||0) + Number(set.vibrance||0)}%) ` +
+              `blur(${set.blur||0}px) ` +
+              `hue-rotate(${Number(set.hue||0) + Number(set.warmth||0)}deg) ` +
+              `sepia(${set.sepia||0}%) ` +
+              `invert(${set.invert||0}%) ` +
+              `grayscale(${set.grayscale||0}%) ` +
+              `opacity(${set.opacity ?? 100}%)`;
+  if(set.rawFilter && set.rawFilter !== 'none') chain = set.rawFilter + " " + chain;
+  return chain;
 }
 
 function updateFiltersDisplay() {
-  if(!cropper) return;
+  if(currentIndex < 0) return;
   const set = imageSettings[currentIndex] || getDefaultSetting();
-  const targetImg = document.querySelector(".cropper-container img");
+  const filterStr = buildFilterChain(set);
   
-  if(targetImg) {
-    let filterChain = `brightness(${1 + set.brightness/100}) contrast(${1 + set.contrast/100}) saturate(${1 + set.saturation/100}) blur(${set.blur}px)`;
-    if(set.rawFilter && set.rawFilter !== 'none') {
-      filterChain += " " + set.rawFilter;
-    }
-    targetImg.style.filter = filterChain;
-  }
+  const targetImg = cropper ? document.querySelector(".cropper-canvas img") : document.querySelector(".image-box.selected img");
+  if(targetImg) targetImg.style.filter = filterStr;
+  
+  const viewImg = document.querySelector('.cropper-view-box img');
+  if(viewImg) viewImg.style.filter = filterStr;
 }
 
-function applyQuickFilter(filterString) {
-  if(currentIndex < 0 || !imageSettings[currentIndex]) return;
-  imageSettings[currentIndex].rawFilter = filterString;
-  updateFiltersDisplay();
+function renderFilterCards() {
+  const panel = document.getElementById("filterPanel");
+  if (!panel || currentIndex < 0) return;
+  panel.innerHTML = "";
+  
+  let currentFilterCss = imageSettings[currentIndex] ? imageSettings[currentIndex].rawFilter : 'none';
+  let previewSrc = images[currentIndex] || 'https://via.placeholder.com/100';
+
+  filterPresets.forEach((p, idx) => {
+    const card = document.createElement("div");
+    card.className = "filter-card" + (p.filter === currentFilterCss || (idx===0 && currentFilterCss==='none') ? " active" : "");
+    card.onclick = () => {
+      recordState(); // Undo trigger for filter selection
+      imageSettings[currentIndex].rawFilter = p.filter;
+      renderFilterCards();
+      updateFiltersDisplay();
+    };
+    card.innerHTML = `
+      <div class="filter-preview-box" style="filter: ${p.filter}; background-image: url('${previewSrc}');"></div>
+      <span>${p.name}</span>
+    `;
+    panel.appendChild(card);
+  });
+}
+
+function initColorPanel() {
+  const cont = document.getElementById('colorSwatchesContainer');
+  if(!cont) return;
+  cont.innerHTML = "";
+  colorTargets.forEach(c => {
+    const div = document.createElement('div');
+    div.className = "color-swatch" + (c.hue === selectedColorTarget ? " active" : "");
+    div.style.backgroundColor = c.css;
+    div.onclick = () => {
+      document.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+      div.classList.add('active');
+      selectedColorTarget = c.hue;
+      document.getElementById('selectiveColorSlider').value = 0;
+      if(currentIndex >= 0) tempColorBaseSrc = images[currentIndex];
+    };
+    cont.appendChild(div);
+  });
+}
+
+function openColorPanel() {
+  if(currentIndex < 0) return;
+  tempColorBaseSrc = images[currentIndex];
+  document.getElementById('selectiveColorSlider').value = 0;
+  switchSubPanel('colorPanel');
+}
+
+function applySelectiveColor() {
+  if(currentIndex < 0 || !tempColorBaseSrc) return;
+  const val = parseInt(document.getElementById('selectiveColorSlider').value);
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width; canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    if (val !== 0) {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        let range = selectedColorTarget === 25 ? 40 : 30;
+        for(let i=0; i<data.length; i+=4) {
+          let hsl = rgbToHsl(data[i], data[i+1], data[i+2]);
+          let h = hsl[0], s = hsl[1], l = hsl[2];
+          let dist = Math.min(Math.abs(h - selectedColorTarget), 360 - Math.abs(h - selectedColorTarget));
+          if(dist < range && s > 0.1) {
+            let effect = (range - dist) / range;
+            l = Math.max(0, Math.min(1, l + (val / 180) * effect)); 
+            s = Math.max(0, Math.min(1, s + (val / 250) * effect)); 
+            let rgb = hslToRgb(h, s, l);
+            data[i] = rgb[0]; data[i+1] = rgb[1]; data[i+2] = rgb[2];
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+    }
+    const newSrc = canvas.toDataURL("image/jpeg", 0.95);
+    images[currentIndex] = newSrc;
+    const targetImg = cropper ? document.querySelector(".cropper-canvas img") : document.querySelector(".image-box.selected img");
+    if(targetImg) targetImg.src = newSrc;
+    if(cropper) cropper.replace(newSrc);
+  };
+  img.src = tempColorBaseSrc; 
+}
+
+function initAdvancedEffects() {
+  const grid = document.getElementById("advancedEffectsGrid");
+  if(!grid) return;
+  grid.innerHTML = "";
+  snapEffects.forEach((ef, idx) => {
+    const div = document.createElement("div");
+    div.className = "effect-btn";
+    div.onclick = () => triggerAdvancedEffect(idx);
+    div.innerHTML = `<div class="effect-icon"><i class="fa-solid ${ef.icon}"></i></div><span>${ef.name}</span>`;
+    grid.appendChild(div);
+  });
+}
+
+function triggerAdvancedEffect(idx) {
+  if(currentIndex < 0) return;
+  recordState();
+  showLoader("Applying Effect...");
+  setTimeout(() => {
+    const ef = snapEffects[idx];
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = () => {
+        canvas.width = img.width; canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        if(ef.type === 'canvas') {
+           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+           let res = ef.fn(imgData.data, canvas.width, canvas.height, ctx);
+           if(res !== false) ctx.putImageData(imgData, 0, 0);
+        }
+        images[currentIndex] = canvas.toDataURL("image/jpeg", 0.95);
+        killCropper();
+        renderImages(currentIndex);
+        hideLoader();
+    };
+    img.src = images[currentIndex];
+  }, 50);
 }
 
 function applyBakeEffect(shouldRecordState = true) {
-  if(!cropper || currentIndex < 0) return;
-  const canvas = cropper.getCroppedCanvas();
-  if(!canvas) return;
-  
+  if(currentIndex < 0) return;
   if(shouldRecordState) recordState();
 
   const tempCanvas = document.createElement("canvas");
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
   const ctx = tempCanvas.getContext("2d");
+  const img = new Image();
   
-  const set = imageSettings[currentIndex] || getDefaultSetting();
+  img.onload = () => {
+    tempCanvas.width = img.width;
+    tempCanvas.height = img.height;
+    
+    const set = imageSettings[currentIndex] || getDefaultSetting();
+    ctx.filter = buildFilterChain(set);
+    ctx.drawImage(img, 0, 0);
+    
+    images[currentIndex] = tempCanvas.toDataURL("image/jpeg", 0.85);
+    
+    const dynLayers = set.dynamicLayers;
+    const layerCounter = set.layerCounter;
 
-  let filterChain = `brightness(${1 + set.brightness/100}) contrast(${1 + set.contrast/100}) saturate(${1 + set.saturation/100}) blur(${set.blur}px)`;
-  if(set.rawFilter && set.rawFilter !== 'none') {
-    filterChain += " " + set.rawFilter;
-  }
-  
-  ctx.filter = filterChain;
-  ctx.drawImage(canvas, 0, 0);
-  
-  images[currentIndex] = tempCanvas.toDataURL("image/jpeg", 0.85);
-  
-  const oldText = imageSettings[currentIndex].textLayer;
-  const oldPip = imageSettings[currentIndex].pipLayer;
-  imageSettings[currentIndex] = getDefaultSetting(); 
-  imageSettings[currentIndex].textLayer = oldText;
-  imageSettings[currentIndex].pipLayer = oldPip;
+    imageSettings[currentIndex] = getDefaultSetting(); 
+    imageSettings[currentIndex].dynamicLayers = dynLayers;
+    imageSettings[currentIndex].layerCounter = layerCounter;
 
-  syncSlidersUI(currentIndex);
+    syncSlidersUI(currentIndex);
+    renderFilterCards();
+    updateFiltersDisplay();
+  };
+  img.src = images[currentIndex];
 }
 
 function bakeAdvancedEffects() {
@@ -1541,127 +1315,175 @@ function bakeAdvancedEffects() {
   renderImages(currentIndex);
 }
 
-function spawnMovableText() {
-  const val = document.getElementById("overlayText").value.trim();
-  if(!val || currentIndex < 0) return;
+function activateTextTool() {
+  if (currentIndex < 0) return;
+  switchSubPanel('textPanel');
+  recordState();
 
-  const tLayer = document.getElementById("movableTextLayer");
-  document.getElementById("textValDisplay").innerText = val;
-  layers.text = { relX: 0.1, relY: 0.4, rotation: 0, fontSize: 28 };
-  applyLayerTransform('text');
-  tLayer.classList.add("active");
-  selectLayer('text');
-  attachLayerDrag('text');
-  saveCurrentLayersToSettings();
+  const set = imageSettings[currentIndex];
+  if(!set.dynamicLayers) set.dynamicLayers = {};
+  set.layerCounter = (set.layerCounter || 0) + 1;
+  const layerId = 'text_' + set.layerCounter;
+
+  // FIX: Default color black se change karke white (#ffffff) kar diya gaya hai
+  set.dynamicLayers[layerId] = { type: 'text', relX: 0.5, relY: 0.5, rotation: 0, fontSize: 28, color: '#ffffff', font: 'Inter', val: 'New Text' };
+
+  renderDynamicLayer(layerId);
+
+  document.querySelectorAll('.movable-layer').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById(layerId);
+  if(el) el.classList.add('selected');
+
+  activeTarget = layerId;
+  
+  // Panel ki default values set ki gayi hain
+  document.getElementById("textInputVal").value = "New Text";
+  document.getElementById("textColorVal").value = "#ffffff";
+  document.getElementById("textFontVal").value = "Inter";
+
+  bringToFront(layerId);
+  
+  setTimeout(() => {
+    const txtBox = document.getElementById("textInputVal");
+    if(txtBox) {
+        txtBox.focus();
+        txtBox.select();
+    }
+  }, 50);
 }
 
-function spawnMovablePip(e) {
+
+function updateLiveText() {
+  if(!activeTarget || !activeTarget.startsWith('text_') || currentIndex < 0) return;
+  const val = document.getElementById("textInputVal").value;
+  const color = document.getElementById("textColorVal").value;
+  const font = document.getElementById("textFontVal").value;
+
+  const display = document.getElementById(activeTarget + "_span");
+  if(display) {
+    display.innerText = val || " ";
+    display.style.color = color;
+    display.style.fontFamily = `"${font}", sans-serif`;
+  }
+  
+  const l = imageSettings[currentIndex].dynamicLayers[activeTarget];
+  if(l) {
+    l.val = val; 
+    l.color = color; 
+    l.font = font;
+  }
+}
+
+function placeTextRightArrow() {
+  if(activeTarget && activeTarget.startsWith('text_')) {
+    const el = document.getElementById(activeTarget);
+    if(el) el.classList.remove("selected");
+  }
+  document.getElementById("textPanel").classList.remove("active");
+  recordState();
+}
+
+function spawnPipOverlay(e) {
   const file = e.target.files[0];
-  if(!file || currentIndex < 0) return;
+  if (!file || currentIndex < 0) return;
+  
+  recordState();
 
   const url = URL.createObjectURL(file);
-  const tempImg = new Image();
+  const set = imageSettings[currentIndex];
+  if(!set.dynamicLayers) set.dynamicLayers = {};
+  set.layerCounter = (set.layerCounter || 0) + 1;
+  const layerId = 'pip_' + set.layerCounter;
   
+  const tempImg = new Image();
   tempImg.onload = () => {
-    const pLayer = document.getElementById("movablePipLayer");
-    const imgEl = document.getElementById("pipImgDisplay");
-    imgEl.src = url;
-
     const naturalWidth = tempImg.naturalWidth || 100;
     const naturalHeight = tempImg.naturalHeight || 100;
     const ar = naturalWidth / naturalHeight;
 
     let baseWidth, baseHeight;
-    // Lambi (Portrait) photo vs Chaudhi (Landscape) photo ke liye logic
-    if (ar < 1) {
-      baseHeight = 130;
-      baseWidth = Math.round(130 * ar);
-    } else {
-      baseWidth = 130;
-      baseHeight = Math.round(130 / ar);
-    }
+    if (ar < 1) { baseHeight = 130; baseWidth = Math.round(130 * ar); } 
+    else { baseWidth = 130; baseHeight = Math.round(130 / ar); }
 
-    layers.pip = { 
-      relX: 0.2, 
-      relY: 0.2, 
-      rotation: 0, 
-      width: baseWidth, 
-      height: baseHeight, 
-      aspectRatio: ar 
-    };
+    set.dynamicLayers[layerId] = { type: 'pip', relX: 0.5, relY: 0.5, rotation: 0, width: baseWidth, height: baseHeight, aspectRatio: ar, src: url };
 
-    applyLayerTransform('pip');
-    pLayer.classList.add("active");
-    selectLayer('pip');
-    attachLayerDrag('pip');
-    saveCurrentLayersToSettings();
+    renderDynamicLayer(layerId);
+    
+    document.querySelectorAll('.movable-layer').forEach(el => el.classList.remove('selected'));
+    const el = document.getElementById(layerId);
+    if(el) el.classList.add('selected');
+
+    activeTarget = layerId;
+    bringToFront(layerId);
+    e.target.value = "";
   };
-  
   tempImg.src = url;
 }
 
-function applyLayerTransform(type) {
-  const l = layers[type];
-  const el = (type === 'text') ? document.getElementById("movableTextLayer") : document.getElementById("movablePipLayer");
-  const selectedBox = document.querySelector(".image-box.selected");
-  if (!selectedBox) return;
+function applyLayerTransform(layerId) {
+  const l = imageSettings[currentIndex].dynamicLayers[layerId];
+  const el = document.getElementById(layerId);
+  if (!l || !el) return;
 
-  const wrapperBounds = document.getElementById("workspaceWrapper").getBoundingClientRect();
-  const boxBounds = selectedBox.getBoundingClientRect();
-
-  const absX = (boxBounds.left - wrapperBounds.left) + (l.relX * boxBounds.width);
-  const absY = (boxBounds.top - wrapperBounds.top) + (l.relY * boxBounds.height);
-
-  el.style.left = absX + "px";
-  el.style.top = absY + "px";
-  el.style.transform = `rotate(${l.rotation}deg)`;
+  el.style.left = (l.relX * 100) + "%";
+  el.style.top = (l.relY * 100) + "%";
+  el.style.transform = `translate(-50%, -50%) rotate(${l.rotation}deg)`;
   
-  if(type === 'text') {
-    el.style.fontSize = l.fontSize + "px";
+  if(l.type === 'text') {
+    const span = document.getElementById(layerId + "_span");
+    // Text box auto sizes perfectly based on font-size with contenteditable
+    if(span) span.style.fontSize = l.fontSize + "px";
   } else {
-    const imgEl = document.getElementById("pipImgDisplay");
-    imgEl.style.width = l.width + "px";
-    imgEl.style.height = l.height + "px";
+    const imgEl = document.getElementById(layerId + "_img");
+    if(imgEl) { imgEl.style.width = l.width + "px"; imgEl.style.height = l.height + "px"; }
   }
 }
-
-function attachLayerDrag(type) {
-  const el = (type === 'text') ? document.getElementById("movableTextLayer") : document.getElementById("movablePipLayer");
-  
+function attachLayerDrag(layerId) {
+  const el = document.getElementById(layerId);
+  if(!el) return;
   const onStart = (e) => {
-    if(e.target.classList.contains('layer-handle')) return;
-    selectLayer(type);
+    if(e.target.classList.contains('editable-text-overlay')) { } else { if(e.cancelable) e.preventDefault(); }
+    if(e.target.classList.contains('layer-handle') || e.target.closest('.layer-handle')) return;
+    
+    document.querySelectorAll('.movable-layer').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+    activeTarget = layerId;
+    bringToFront(layerId);
 
-    const selectedBox = document.querySelector(".image-box.selected");
-    if(!selectedBox) return;
+    const l = imageSettings[currentIndex].dynamicLayers[layerId];
+    if (l.type === 'text') {
+        switchSubPanel('textPanel');
+        document.getElementById("textColorVal").value = l.color || "#ffffff";
+        document.getElementById("textFontVal").value = l.font || "Inter";
+    } else {
+        document.querySelectorAll(".sub-panel").forEach(p => p.classList.remove("active"));
+    }
 
-    const boxBounds = selectedBox.getBoundingClientRect();
-
-    const isTouch = e.type.startsWith('touch');
-    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
-    const clientY = isTouch ? e.touches[0].clientY : e.clientY;
-
-    let startRelX = layers[type].relX - ((clientX - boxBounds.left) / boxBounds.width);
-    let startRelY = layers[type].relY - ((clientY - boxBounds.top) / boxBounds.height);
+    let isMoved = false; // Track movement for undo/redo
 
     const onMove = (ev) => {
       if (ev.cancelable) ev.preventDefault();
-      const isMoveTouch = ev.type.startsWith('touch');
-      const cX = isMoveTouch ? ev.touches[0].clientX : ev.clientX;
-      const cY = isMoveTouch ? ev.touches[0].clientY : ev.clientY;
       
-      layers[type].relX = ((cX - boxBounds.left) / boxBounds.width) + startRelX;
-      layers[type].relY = ((cY - boxBounds.top) / boxBounds.height) + startRelY;
+      // Jaise hi user layer hilayega, purani position save ho jayegi
+      if (!isMoved) { recordState(); isMoved = true; } 
+
+      const cX = ev.type.startsWith('touch') ? ev.touches[0].clientX : ev.clientX;
+      const cY = ev.type.startsWith('touch') ? ev.touches[0].clientY : ev.clientY;
       
-      applyLayerTransform(type);
-      saveCurrentLayersToSettings();
+      const box = document.querySelector(".image-box.selected");
+      if(box) {
+        const rect = box.getBoundingClientRect();
+        l.relX = (cX - rect.left) / rect.width;
+        l.relY = (cY - rect.top) / rect.height;
+      }
+    
+      applyLayerTransform(layerId);
     };
 
     const onEnd = () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("mouseup", onEnd);
-      document.removeEventListener("touchend", onEnd);
+      document.removeEventListener("mousemove", onMove); document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("mouseup", onEnd); document.removeEventListener("touchend", onEnd);
+      saveCurrentLayersToSettings();
     };
 
     document.addEventListener("mousemove", onMove);
@@ -1669,175 +1491,154 @@ function attachLayerDrag(type) {
     document.addEventListener("mouseup", onEnd);
     document.addEventListener("touchend", onEnd);
   };
-
   el.onmousedown = onStart;
   el.ontouchstart = onStart;
 }
 
-function initTransform(e, type, action) {
+function initAdvancedTransform(e, layerId, action) {
   e.stopPropagation();
   if (e.cancelable) e.preventDefault();
-  selectLayer(type);
-  
-  const el = (type === 'text') ? document.getElementById("movableTextLayer") : document.getElementById("movablePipLayer");
+  const el = document.getElementById(layerId);
+  if(!el) return;
+
   const rect = el.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
 
+  const startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+  const startY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+  const startDist = Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2));
+  const startAngle = Math.atan2(startY - centerY, startX - centerX);
+
+  const l = imageSettings[currentIndex].dynamicLayers[layerId];
+  const isText = l.type === 'text';
+  
+  const startSize = isText ? l.fontSize : Math.max(l.width, l.height);
+  const startRot = l.rotation;
+
+  let isMoved = false; // Undo tracker 
+
   const onMove = (ev) => {
     if (ev.cancelable) ev.preventDefault();
-    const isTouch = ev.type.startsWith('touch');
-    const clientX = isTouch ? ev.touches[0].clientX : ev.clientX;
-    const clientY = isTouch ? ev.touches[0].clientY : ev.clientY;
 
-    if(action === 'rotate') {
-      const rad = Math.atan2(clientY - centerY, clientX - centerX);
-      let deg = rad * (180 / Math.PI) - 90;
-      layers[type].rotation = Math.round(deg);
-    } else if (action === 'resize') {
-      const dist = Math.hypot(clientX - centerX, clientY - centerY);
-      if(type === 'text') {
-        layers.text.fontSize = Math.max(14, Math.round(dist / 2));
+    // Size badalne se thik pehle state record hogi
+    if (!isMoved) { recordState(); isMoved = true; } 
+
+    const cX = ev.type.startsWith('touch') ? ev.touches[0].clientX : ev.clientX;
+    const cY = ev.type.startsWith('touch') ? ev.touches[0].clientY : ev.clientY;
+    
+    if (action === 'transform') {
+      const newDist = Math.sqrt((cX-centerX)**2 + (cY-centerY)**2);
+      const scale = newDist / (startDist || 1);
+
+      if (isText) {
+          l.fontSize = Math.max(12, startSize * scale);
       } else {
-        // Fix: Aspect Ratio ke hisab se width aur height resize hogi
-        const ar = layers.pip.aspectRatio || (layers.pip.width / layers.pip.height) || 1;
-        const distSize = Math.max(30, Math.round(dist * 1.5));
-        
-        if (ar < 1) {
-          // Lambi/Portrait image ke liye height base calculation
-          layers.pip.height = distSize;
-          layers.pip.width = Math.round(distSize * ar);
-        } else {
-          // Chaudhi/Landscape image ke liye width base calculation
-          layers.pip.width = distSize;
-          layers.pip.height = Math.round(distSize / ar);
-        }
+          const ar = l.aspectRatio || (l.width/l.height) || 1;
+          const size = Math.max(30, startSize * scale);
+
+          if (ar >= 1) {
+              l.width = size;
+              l.height = size / ar;
+          } else {
+              l.height = size;
+              l.width = size * ar;
+          }
       }
+
+      const newAngle = Math.atan2(cY-centerY, cX-centerX);
+      l.rotation = startRot + ((newAngle-startAngle) * 180 / Math.PI);
     }
-    applyLayerTransform(type);
-    saveCurrentLayersToSettings();
+    applyLayerTransform(layerId);
   };
 
   const onEnd = () => {
-    document.removeEventListener("mousemove", onMove);
-    document.removeEventListener("touchmove", onMove);
-    document.removeEventListener("mouseup", onEnd);
-    document.removeEventListener("touchend", onEnd);
+    document.removeEventListener("mousemove", onMove); document.removeEventListener("touchmove", onMove);
+    document.removeEventListener("mouseup", onEnd); document.removeEventListener("touchend", onEnd);
+    saveCurrentLayersToSettings();
   };
-
-  document.addEventListener("mousemove", onMove);
-  document.addEventListener("touchmove", onMove, { passive: false });
-  document.addEventListener("mouseup", onEnd);
-  document.addEventListener("touchend", onEnd);
-}
-
-async function burnLayerToImage(type) {
-  if(currentIndex < 0) return;
-  saveCurrentLayersToSettings();
-  recordState();
-
-  const compiledDataUrl = await getCompositeImageUrl(currentIndex, 0.95);
-  images[currentIndex] = compiledDataUrl;
-  
-  deleteLayer(type);
-  killCropper();
-  renderImages(currentIndex);
+  document.addEventListener("mousemove", onMove); document.addEventListener("touchmove", onMove, { passive: false });
+  document.addEventListener("mouseup", onEnd); document.addEventListener("touchend", onEnd);
 }
 
 function getCompositeImageUrl(idx, quality = 0.85) {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
-    img.onload = () => {
+    img.onload = async () => {
       const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = img.width; canvas.height = img.height;
       const ctx = canvas.getContext("2d");
 
       const set = imageSettings[idx] || getDefaultSetting();
-      let filterChain = `brightness(${1 + (set.brightness||0)/100}) contrast(${1 + (set.contrast||0)/100}) saturate(${1 + (set.saturation||0)/100}) blur(${set.blur||0}px)`;
-      if(set.rawFilter && set.rawFilter !== 'none') filterChain += " " + set.rawFilter;
-      ctx.filter = filterChain;
+      ctx.filter = buildFilterChain(set);
       ctx.drawImage(img, 0, 0);
       ctx.filter = "none";
 
       const selectedBox = document.querySelector(".image-box.selected") || document.querySelector(".image-box");
       const boxWidth = selectedBox ? selectedBox.getBoundingClientRect().width : 250;
       const boxHeight = selectedBox ? selectedBox.getBoundingClientRect().height : 310;
-
       const imgAspect = canvas.width / canvas.height;
       const boxAspect = boxWidth / boxHeight;
 
       let renderedWidth, renderedHeight, offsetX, offsetY;
       if (imgAspect > boxAspect) {
-        renderedWidth = boxWidth;
-        renderedHeight = boxWidth / imgAspect;
-        offsetX = 0;
-        offsetY = (boxHeight - renderedHeight) / 2;
+        renderedWidth = boxWidth; renderedHeight = boxWidth / imgAspect;
+        offsetX = 0; offsetY = (boxHeight - renderedHeight) / 2;
       } else {
-        renderedHeight = boxHeight;
-        renderedWidth = boxHeight * imgAspect;
-        offsetX = (boxWidth - renderedWidth) / 2;
-        offsetY = 0;
+        renderedHeight = boxHeight; renderedWidth = boxHeight * imgAspect;
+        offsetX = (boxWidth - renderedWidth) / 2; offsetY = 0;
       }
 
       const scale = canvas.width / renderedWidth;
 
-      // 🔍 Fix: Movable layer offset (8px padding + 2px border = 10px)
-      const layerOffset = 10;
+      if(set.dynamicLayers) {
+        const pipPromises = [];
+        for(const k in set.dynamicLayers) {
+          const l = set.dynamicLayers[k];
+          if(l.type === 'pip') {
+            pipPromises.push(new Promise(res => {
+              const p = new Image();
+              p.onload = () => res({l, img: p});
+              p.onerror = () => res(null);
+              p.src = l.src;
+            }));
+          }
+        }
+        const loadedPips = await Promise.all(pipPromises);
 
-      // Text Layer
-      if (set.textLayer && set.textLayer.active && set.textLayer.text) {
-        ctx.save();
-        const screenX = (set.textLayer.relX * boxWidth) + layerOffset;
-        const screenY = (set.textLayer.relY * boxHeight) + layerOffset;
-
-        const canvasX = (screenX - offsetX) * scale;
-        const canvasY = (screenY - offsetY) * scale;
-
-        ctx.translate(canvasX, canvasY);
-        ctx.rotate((set.textLayer.rotation * Math.PI) / 180);
-
-        const fontResized = Math.floor(set.textLayer.fontSize * scale);
-        ctx.font = `bold ${fontResized}px Arial`;
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-        ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = Math.max(2, Math.floor(fontResized * 0.12));
-        ctx.strokeText(set.textLayer.text, 0, 0);
-        ctx.fillText(set.textLayer.text, 0, 0);
-        ctx.restore();
-      }
-
-      // PIP Layer
-      if (set.pipLayer && set.pipLayer.active && set.pipLayer.src) {
-        const pImg = new Image();
-        pImg.crossOrigin = "Anonymous";
-        pImg.onload = () => {
+        for(const k in set.dynamicLayers) {
+          const l = set.dynamicLayers[k];
           ctx.save();
-          // 🔍 Fix: Screen offset ko add kiya takia exact pixel position match ho
-          const screenCenterX = (set.pipLayer.relX * boxWidth) + layerOffset + (set.pipLayer.width / 2);
-          const screenCenterY = (set.pipLayer.relY * boxHeight) + layerOffset + (set.pipLayer.height / 2);
+          const screenX = (l.relX * boxWidth);
+          const screenY = (l.relY * boxHeight);
+          ctx.translate((screenX - offsetX) * scale, (screenY - offsetY) * scale);
+          ctx.rotate((l.rotation * Math.PI) / 180);
 
-          const canvasX = (screenCenterX - offsetX) * scale;
-          const canvasY = (screenCenterY - offsetY) * scale;
-
-          ctx.translate(canvasX, canvasY);
-          ctx.rotate((set.pipLayer.rotation * Math.PI) / 180);
-
-          const tw = set.pipLayer.width * scale;
-          const th = set.pipLayer.height * scale;
-
-          ctx.drawImage(pImg, -tw / 2, -th / 2, tw, th);
+          if(l.type === 'text') {
+            const fontResized = l.fontSize * scale;
+            ctx.font = `bold ${fontResized}px "${l.font || 'Inter'}"`;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillStyle = l.color || "#ffffff";
+            ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 10;
+            
+            const lines = (l.val || "").split(/\r?\n/);
+            const lineHeight = fontResized * 1.2;
+            const startY = -((lines.length - 1) * lineHeight) / 2;
+            lines.forEach((line, index) => {
+              ctx.fillText(line, 0, startY + (index * lineHeight));
+            });
+          } else if(l.type === 'pip') {
+            const pipData = loadedPips.find(p => p && p.l === l);
+            if(pipData) {
+              const tw = l.width * scale;
+              const th = l.height * scale;
+              ctx.drawImage(pipData.img, -tw / 2, -th / 2, tw, th);
+            }
+          }
           ctx.restore();
-          resolve(canvas.toDataURL("image/jpeg", quality));
-        };
-        pImg.onerror = () => resolve(canvas.toDataURL("image/jpeg", quality));
-        pImg.src = set.pipLayer.src;
-        return;
+        }
       }
-
       resolve(canvas.toDataURL("image/jpeg", quality));
     };
     img.onerror = () => resolve(images[idx]);
@@ -1848,13 +1649,9 @@ function getCompositeImageUrl(idx, quality = 0.85) {
 function calculateLivePdfMetrics() {
   const quality = Number(document.getElementById("compressSlider").value) / 100;
   let simulatedBytes = 0;
-  images.forEach(i => {
-    simulatedBytes += (i.length * 0.75) * quality;
-  });
-  
+  images.forEach(i => { simulatedBytes += (i.length * 0.75) * quality; });
   let formattedSize = (simulatedBytes / 1024).toFixed(1) + " KB";
   if(simulatedBytes > 1048576) formattedSize = (simulatedBytes / 1048576).toFixed(1) + " MB";
-  
   document.getElementById("livePdfSizeDisplay").innerText = formattedSize;
 }
 
@@ -1868,191 +1665,117 @@ function goToPDF() {
 async function renderPdfPreviewDeck() {
   const preview = document.getElementById("pdfPreview");
   preview.innerHTML = "";
-  
-  // High-memory pressure se bachne ke liye step-by-step rendering
   for(let idx = 0; idx < images.length; idx++) {
     const block = document.createElement("div");
     block.className = "preview-item-wrapper";
-    
-    // Default image source
     let src = images[idx];
-    
-    // Agar layers active hain tabhi canvas composite banao
     const set = imageSettings[idx];
-    if (set && ((set.textLayer && set.textLayer.active) || (set.pipLayer && set.pipLayer.active) || set.brightness || set.contrast || set.saturation || set.blur || (set.rawFilter && set.rawFilter !== 'none'))) {
-      src = await getCompositeImageUrl(idx, 0.5); // Preview light quality me generate karein
+    if (set && (Object.keys(set.dynamicLayers || {}).length > 0 || set.brightness || set.contrast || set.saturation || set.blur || (set.rawFilter && set.rawFilter !== 'none'))) {
+      src = await getCompositeImageUrl(idx, 0.5); 
     }
-
-    block.innerHTML = `
-      <button class="preview-delete-btn" onclick="removeImageFromPreview(${idx})">✕</button>
-      <img src="${src}" loading="lazy">
-    `;
+    block.innerHTML = `<button class="preview-delete-btn" onclick="removeImageFromPreview(${idx})">✕</button><img src="${src}" loading="lazy">`;
     preview.appendChild(block);
   }
 }
 
 function removeImageFromPreview(idx) {
-  recordState();
-  images.splice(idx, 1);
-  imageSettings.splice(idx, 1);
-  renderPdfPreviewDeck();
-  calculateLivePdfMetrics();
+  recordState(); images.splice(idx, 1); imageSettings.splice(idx, 1); renderPdfPreviewDeck(); calculateLivePdfMetrics();
 }
 
 async function generateAndSavePDF() {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-
+  const pageWidth = 210; const pageHeight = 297;
   const quality = Number(document.getElementById("compressSlider").value) / 100;
   
   for(let i = 0; i < images.length; i++) {
     if (i > 0) pdf.addPage();
-    
-    // Composite Image Generate karna
     const finalCompImg = await getCompositeImageUrl(i, quality);
-    
     await new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
         const imgAspect = img.naturalWidth / img.naturalHeight;
         const pageAspect = pageWidth / pageHeight;
-
         let drawWidth, drawHeight;
-        if (imgAspect > pageAspect) {
-          drawWidth = pageWidth;
-          drawHeight = pageWidth / imgAspect;
-        } else {
-          drawHeight = pageHeight;
-          drawWidth = pageHeight * imgAspect;
-        }
-
-        const xOffset = (pageWidth - drawWidth) / 2;
-        const yOffset = (pageHeight - drawHeight) / 2;
-        
+        if (imgAspect > pageAspect) { drawWidth = pageWidth; drawHeight = pageWidth / imgAspect; } 
+        else { drawHeight = pageHeight; drawWidth = pageHeight * imgAspect; }
+        const xOffset = (pageWidth - drawWidth) / 2; const yOffset = (pageHeight - drawHeight) / 2;
         pdf.addImage(finalCompImg, "JPEG", xOffset, yOffset, drawWidth, drawHeight, undefined, 'FAST');
         resolve();
       };
-      img.onerror = resolve;
-      img.src = finalCompImg;
+      img.onerror = resolve; img.src = finalCompImg;
     });
   }
   
   let name = document.getElementById("pdfName").value.trim() || "Pro_Document";
   const fileName = name + ".pdf";
-
-  // Mobile Chrome Download Compatibility Fix
   try {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
-    
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Memory release karne ke liye timeout
+    const link = document.createElement('a'); link.href = blobUrl; link.download = fileName;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-  } catch(err) {
-    // Backup fallback method
-    pdf.save(fileName);
-  }
+  } catch(err) { pdf.save(fileName); }
 }
 
 async function processPdfToImageConversion(e) {
   const file = e.target.files[0];
   if(!file) return;
-
   const statusEl = document.getElementById("conversionStatus");
   const previewContainer = document.getElementById("pdfToImgPreview");
   statusEl.innerText = "Processing PDF Elements... Please wait.";
-  previewContainer.innerHTML = "";
-  extractedPdfPages = [];
-  
+  previewContainer.innerHTML = ""; extractedPdfPages = [];
   try {
     const fileReader = new FileReader();
     fileReader.onload = async function() {
       const typedarray = new Uint8Array(this.result);
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-      
       const pdf = await pdfjsLib.getDocument(typedarray).promise;
       statusEl.innerText = `Found ${pdf.numPages} Pages. Generating Previews...`;
-      
       for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
         const viewport = page.getViewport({ scale: 1.5 });
-        
         const canvas = document.createElement('canvas');
         const canvasCtx = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        
-        const renderContext = { canvasContext: canvasCtx, viewport: viewport };
-        await page.render(renderContext).promise;
-        
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-        extractedPdfPages.push(dataUrl);
+        canvas.height = viewport.height; canvas.width = viewport.width;
+        await page.render({ canvasContext: canvasCtx, viewport: viewport }).promise;
+        extractedPdfPages.push(canvas.toDataURL("image/jpeg", 0.9));
       }
-      
       statusEl.innerText = "Conversion Finished!";
       document.getElementById("downloadAllImagesBtn").style.display = "inline-block";
       renderPdfToImagePreviewDeck();
     };
     fileReader.readAsArrayBuffer(file);
-  } catch(err) {
-    statusEl.innerText = "Error encountered during execution.";
-    console.error(err);
-  }
+  } catch(err) { statusEl.innerText = "Error encountered during execution."; console.error(err); }
 }
 
 function renderPdfToImagePreviewDeck() {
   const previewContainer = document.getElementById("pdfToImgPreview");
   previewContainer.innerHTML = "";
-  
-  if(extractedPdfPages.length === 0) {
-    document.getElementById("downloadAllImagesBtn").style.display = "none";
-    return;
-  }
-  
+  if(extractedPdfPages.length === 0) { document.getElementById("downloadAllImagesBtn").style.display = "none"; return; }
   extractedPdfPages.forEach((dataSrc, index) => {
-    const block = document.createElement("div");
-    block.className = "preview-item-wrapper";
-    block.innerHTML = `
-      <button class="preview-delete-btn" onclick="removeExtractedPage(${index})">✕</button>
-      <img src="${dataSrc}">
-      <a href="${dataSrc}" download="Page_${index+1}.jpg" style="display:block; text-align:center; color:#00ffcc; text-decoration:none; font-size:12px; margin-top:5px; font-weight:bold;">Save Page</a>
-    `;
+    const block = document.createElement("div"); block.className = "preview-item-wrapper";
+    block.innerHTML = `<button class="preview-delete-btn" onclick="removeExtractedPage(${index})">✕</button><img src="${dataSrc}"><a href="${dataSrc}" download="Page_${index+1}.jpg" style="display:block; text-align:center; color:#00ffcc; text-decoration:none; font-size:12px; margin-top:5px; font-weight:bold;">Save Page</a>`;
     previewContainer.appendChild(block);
   });
 }
 
-function removeExtractedPage(idx) {
-  extractedPdfPages.splice(idx, 1);
-  renderPdfToImagePreviewDeck();
-}
+function removeExtractedPage(idx) { extractedPdfPages.splice(idx, 1); renderPdfToImagePreviewDeck(); }
 
 function downloadAllExtractedImages() {
   if(!extractedPdfPages.length) return;
   extractedPdfPages.forEach((src, idx) => {
-    const triggerLink = document.createElement("a");
-    triggerLink.href = src;
-    triggerLink.download = `Extracted_Page_${idx + 1}.jpg`;
-    document.body.appendChild(triggerLink);
-    setTimeout(() => {
-      triggerLink.click();
-      document.body.removeChild(triggerLink);
-    }, idx * 250);
+    const link = document.createElement("a"); link.href = src; link.download = `Extracted_Page_${idx + 1}.jpg`;
+    document.body.appendChild(link);
+    setTimeout(() => { link.click(); document.body.removeChild(link); }, idx * 250);
   });
 }
 
 function resetAppSystem() {
   killCropper();
-  hideMovableLayers();
-  images = []; imageSettings = []; currentIndex = -1; currentDraftId = null;
-  extractedPdfPages = [];
+  document.querySelectorAll('.movable-layer').forEach(el => el.remove());
+  activeTarget = 'main';
+  images = []; imageSettings = []; currentIndex = -1; currentDraftId = null; extractedPdfPages = [];
   undoStack = []; redoStack = []; updateUndoRedoUI();
   document.getElementById("pdfName").value = "";
   document.getElementById("pdfToImgPreview").innerHTML = "";
@@ -2062,150 +1785,170 @@ function resetAppSystem() {
 
 function compressImageForDraft(src) {
   return new Promise((resolve) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
+    const img = new Image(); img.crossOrigin = "Anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      let width = img.width;
-      let height = img.height;
-      const maxDim = 1000;
-
+      let width = img.width; let height = img.height; const maxDim = 1000;
       if (width > maxDim || height > maxDim) {
-        if (width > height) {
-          height = Math.round((height * maxDim) / width);
-          width = maxDim;
-        } else {
-          width = Math.round((width * maxDim) / height);
-          height = maxDim;
-        }
+        if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; } 
+        else { width = Math.round((width * maxDim) / height); height = maxDim; }
       }
-
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, width, height);
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0, width, height);
       resolve(canvas.toDataURL("image/jpeg", 0.6));
     };
-    img.onerror = () => resolve(src);
-    img.src = src;
+    img.onerror = () => resolve(src); img.src = src;
   });
 }
 
 async function saveProjectDraft() {
   saveCurrentLayersToSettings();
   const compressedImages = await Promise.all(images.map(img => compressImageForDraft(img)));
-
   let sizeInBytes = 0;
   compressedImages.forEach(i => sizeInBytes += (i ? i.length * 0.75 : 0));
   let sizeStr = (sizeInBytes / 1024).toFixed(1) + " KB";
   if(sizeInBytes > 1048576) sizeStr = (sizeInBytes / 1048576).toFixed(1) + " MB";
 
-  let allDrafts = JSON.parse(localStorage.getItem("proPdfDrafts")) || [];
+  // FIX: Use Advanced Storage to bypass 5MB limit
+  let allDrafts = await localforage.getItem("proPdfDrafts") || [];
+  
+  if (!currentDraftId) {
+      currentDraftId = Date.now();
+  }
 
   const draft = {
-    id: currentDraftId || Date.now(),
-    date: new Date().toLocaleDateString(),
-    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+    id: currentDraftId, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
     pdfName: document.getElementById("pdfName").value.trim() || "Untitled Project",
-    images: compressedImages,
-    settings: [...imageSettings],
-    pages: compressedImages.length,
-    fileSize: sizeStr
+    images: compressedImages, 
+    settings: JSON.parse(JSON.stringify(imageSettings)), // Deep copy for safety
+    pages: compressedImages.length, fileSize: sizeStr
   };
 
-  if(currentDraftId) {
-    const idx = allDrafts.findIndex(d => d.id === currentDraftId);
-    if(idx !== -1) allDrafts[idx] = draft;
-  } else {
-    allDrafts.unshift(draft);
+  const idx = allDrafts.findIndex(d => d.id === currentDraftId); 
+  if(idx !== -1) {
+      allDrafts[idx] = draft; 
+  } else { 
+      allDrafts.unshift(draft); 
   }
 
-  try {
-    localStorage.setItem("proPdfDrafts", JSON.stringify(allDrafts));
+  try { 
+    await localforage.setItem("proPdfDrafts", allDrafts); 
   } catch (error) {
-    allDrafts.pop();
-    try {
-      localStorage.setItem("proPdfDrafts", JSON.stringify(allDrafts));
-    } catch (e) {
-      console.error("Storage full", e);
-    }
+    console.error("Storage error", error);
   }
 }
 
-async function goHome() {
-  autoSaveCurrentFilterState();
-  if(images.length > 0) {
-    await saveProjectDraft();
-  }
-  resetAppSystem();
-  showPage(1);
-}
-
-function renderDraftSystem() {
+async function renderDraftSystem() {
   const box = document.getElementById("draftList");
   if(!box) return;
+  box.innerHTML = `<div style="text-align:center; padding:30px; color:#52525b;">Loading Drafts...</div>`;
+  
+  let allDrafts = await localforage.getItem("proPdfDrafts") || [];
+  if(!allDrafts.length) { box.innerHTML = `<div style="text-align:center; padding:30px; color:#52525b;">No premium drafts found.</div>`; return; }
+  
   box.innerHTML = "";
-  let allDrafts = JSON.parse(localStorage.getItem("proPdfDrafts")) || [];
-  
-  if(!allDrafts.length) {
-    box.innerHTML = `<div style="text-align:center; padding:30px; color:#52525b;">No premium drafts found.</div>`;
-    return;
-  }
-  
   allDrafts.forEach(d => {
     box.innerHTML += `
       <div class="draft-card">
-        <div class="draft-left">
-          <img class="draft-thumb" src="${d.images[0]}">
+        <div class="draft-left"><img class="draft-thumb" src="${d.images[0]}">
           <div class="draft-details">
             <h4>${d.pdfName}</h4>
-            <div class="draft-meta">
-              <span>📄 ${d.pages} Pages</span>
-              <span>📦 ${d.fileSize}</span>
-            </div>
-            <div class="draft-meta">              
-              <span>📅 ${d.date} at ${d.time}</span>
-            </div>
+            <div class="draft-meta"><span>📄 ${d.pages} Pages</span><span>📦 ${d.fileSize}</span></div>
+            <div class="draft-meta"><span>📅 ${d.date} at ${d.time}</span></div>
           </div>
         </div>
-        <div class="draft-actions">
-          <button class="btn-cont" onclick="loadDraftProject(${d.id})">Open</button>
-          <button class="btn-del" onclick="removeDraftProject(${d.id})">Drop</button>
-        </div>
+        <div class="draft-actions"><button class="btn-cont" onclick="loadDraftProject(${d.id})">Open</button><button class="btn-del" onclick="removeDraftProject(${d.id})">Drop</button></div>
       </div>`;
   });
 }
 
-
-function loadDraftProject(id) {
-  let allDrafts = JSON.parse(localStorage.getItem("proPdfDrafts")) || [];
+async function loadDraftProject(id) {
+  showLoader("Loading Project...");
+  let allDrafts = await localforage.getItem("proPdfDrafts") || [];
   const draft = allDrafts.find(x => x.id === id);
-  if(!draft) return;
+  if(!draft) { hideLoader(); return; }
   
-  images = [...draft.images];
-  imageSettings = [...draft.settings];
-  currentDraftId = draft.id;
+  images = [...draft.images]; 
+  imageSettings = JSON.parse(JSON.stringify(draft.settings)); 
+  currentDraftId = draft.id; 
   document.getElementById("pdfName").value = draft.pdfName;
   
-  undoStack = []; redoStack = []; updateUndoRedoUI();
-  showPage(2);
-  renderImages(0);
+  undoStack = []; redoStack = []; 
+  currentIndex = 0;
+  
+  showPage(2); 
+  renderImages(currentIndex);
+  
+  // FIX: Force Undo/Redo to start tracking as soon as draft is opened
+  recordState(); 
+  hideLoader();
 }
 
-function removeDraftProject(id) {
-  let allDrafts = JSON.parse(localStorage.getItem("proPdfDrafts")) || [];
+async function removeDraftProject(id) {
+  let allDrafts = await localforage.getItem("proPdfDrafts") || [];
   allDrafts = allDrafts.filter(x => x.id !== id);
-  localStorage.setItem("proPdfDrafts", JSON.stringify(allDrafts));
+  await localforage.setItem("proPdfDrafts", allDrafts); 
   renderDraftSystem();
 }
 
-function deleteAllDrafts() {
+async function deleteAllDrafts() {
   if(!confirm("Are you sure to delete all pro projects?")) return;
-  localStorage.removeItem("proPdfDrafts");
+  await localforage.removeItem("proPdfDrafts"); 
   renderDraftSystem();
+}
+
+async function goHome() {
+  autoSaveCurrentFilterState();
+
+  if (images.length > 0) {
+    await saveProjectDraft();   // Pehle save hoga
+  }
+
+  resetAppSystem();
+  await renderDraftSystem();    // Draft list refresh hogi
+  showPage(1);
 }
 
 document.addEventListener("DOMContentLoaded", renderDraftSystem);
+
+// GLOBAL INPUT TRACKER: Slider pakadne ya text field par click karne par state save karta hai
+document.addEventListener("mousedown", (e) => {
+  if (e.target.closest('.edit-panel') && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
+    recordState();
+  }
+});
+document.addEventListener("touchstart", (e) => {
+  if (e.target.closest('.edit-panel') && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
+    recordState();
+  }
+}, { passive: true });
+
+function moveSelectedImage(direction) {
+    if (currentIndex < 0) return;
+
+    const newIndex = currentIndex + direction;
+
+    if (newIndex < 0 || newIndex >= images.length) return;
+
+    recordState();
+    autoSaveCurrentFilterState();
+
+    swapData(currentIndex, newIndex);
+
+    currentIndex = newIndex;
+
+    renderImages(currentIndex);
+
+    setTimeout(() => {
+    const selected = document.querySelector(".image-box.selected");
+    if (selected) {
+        selected.parentElement.scrollTo({
+            left: selected.offsetLeft - 20,
+            behavior: "smooth"
+        });
+    }
+}, 50);
+}
 </script>
 </body>
 </html>
