@@ -459,6 +459,475 @@ body {
   </div>
   
   <div id="draftList"></div>
+
+
+
+
+
+
+
+
+<!-- ==================== ULTIMATE PRO PDF SUITE SECTION START ==================== -->
+<div class="pdf-guide-master-wrapper">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+        /* Master Container Scope */
+        .pdf-guide-master-wrapper {
+            font-family: 'Poppins', sans-serif;
+            background-color: #060713;
+            color: #ffffff;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            margin: 40px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .pdf-guide-master-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Ambient Glowing Background Orbs (Scoped inside Master Wrapper) */
+        .pdf-guide-master-wrapper .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: 0;
+            animation: floatOrb 10s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .pdf-guide-master-wrapper .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            top: -50px;
+            left: -50px;
+        }
+
+        .pdf-guide-master-wrapper .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        .pdf-guide-master-wrapper .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(45deg, #00ff87, #60efff);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.25;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(25px, 30px) scale(1.08); }
+        }
+
+        /* Inner Content Container */
+        .pdf-guide-master-wrapper .pdf-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Panel Base */
+        .pdf-guide-master-wrapper .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pdf-guide-master-wrapper .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Hero Header */
+        .pdf-guide-master-wrapper .hero {
+            text-align: center;
+            padding: 50px 25px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .pdf-guide-master-wrapper .hero-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            background: linear-gradient(90deg, #ff007f, #7928ca);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+        }
+
+        .pdf-guide-master-wrapper .title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff 20%, #00f2fe 60%, #ff007f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .pdf-guide-master-wrapper .subtitle {
+            font-size: 1.1rem;
+            color: #b3b3cb;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Section Titles */
+        .pdf-guide-master-wrapper .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .pdf-guide-master-wrapper .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #a0a0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pdf-guide-master-wrapper .section-icon {
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Feature Grid */
+        .pdf-guide-master-wrapper .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .pdf-guide-master-wrapper .feature-box {
+            background: rgba(15, 16, 32, 0.6);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-guide-master-wrapper .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color, #00f2fe);
+        }
+
+        .pdf-guide-master-wrapper .feature-box:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 15px 35px var(--glow-color, rgba(0, 242, 254, 0.25));
+            border-color: var(--accent-color, #00f2fe);
+        }
+
+        .pdf-guide-master-wrapper .feature-icon {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .pdf-guide-master-wrapper .feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .pdf-guide-master-wrapper .feature-desc {
+            font-size: 0.9rem;
+            color: #a0a0be;
+            line-height: 1.6;
+        }
+
+        /* Options & Steps */
+        .pdf-guide-master-wrapper .option-container {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pdf-guide-master-wrapper .option-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00f2fe;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pdf-guide-master-wrapper .steps-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .pdf-guide-master-wrapper .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 3px solid #ff007f;
+        }
+
+        .pdf-guide-master-wrapper .step-num {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            color: #fff;
+            font-weight: 700;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .pdf-guide-master-wrapper .step-text {
+            font-size: 0.9rem;
+            color: #d1d1e0;
+            line-height: 1.5;
+        }
+
+        .pdf-guide-master-wrapper .step-text strong {
+            color: #fff;
+        }
+
+        /* Pro Tips Card */
+        .pdf-guide-master-wrapper .pro-tips-card {
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(121, 40, 202, 0.15));
+            border: 1px solid rgba(255, 0, 127, 0.3);
+            position: relative;
+        }
+
+        .pdf-guide-master-wrapper .tip-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .pdf-guide-master-wrapper .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #e2e2fe;
+            line-height: 1.5;
+        }
+
+        .pdf-guide-master-wrapper .tip-bullet {
+            color: #00ff87;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pdf-guide-master-wrapper .title { font-size: 2rem; }
+            .pdf-guide-master-wrapper .subtitle { font-size: 0.95rem; }
+            .pdf-guide-master-wrapper .glass-card { padding: 20px; }
+        }
+    </style>
+
+    <!-- Background Glows -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <!-- MAIN WRAPPER CONTENT -->
+    <div class="pdf-container">
+
+        <!-- HERO HEADER CONTAINER -->
+        <div class="glass-card hero">
+            <span class="hero-badge">⚡ Next-Gen Document Suite</span>
+            <h1 class="title">Ultimate Pro PDF Suite</h1>
+            <p class="subtitle">
+                Transform, Edit, and Master your PDFs with ultra-fast speed, live compression, neon filters, and auto-draft saving!
+            </p>
+        </div>
+
+        <!-- FEATURES GRID CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">🚀</div>
+                <h2>Ultimate Power Features</h2>
+            </div>
+
+            <div class="grid">
+                <div class="feature-box" style="--accent-color: #00f2fe; --glow-color: rgba(0, 242, 254, 0.25);">
+                    <div class="feature-icon">🔁</div>
+                    <div class="feature-title">Two-Way Magic</div>
+                    <div class="feature-desc">Images se PDF banayein ya kisi bhi PDF file se high-res images instant extract karein.</div>
+                </div>
+
+                <div class="feature-box" style="--accent-color: #ff007f; --glow-color: rgba(255, 0, 127, 0.25);">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-title">Pro Image Studio</div>
+                    <div class="feature-desc">Brightness, Contrast, Saturation aur Blur ko apney hisaab se live fine-tune karein.</div>
+                </div>
+
+                <div class="feature-box" style="--accent-color: #00ff87; --glow-color: rgba(0, 255, 135, 0.25);">
+                    <div class="feature-icon">🎭</div>
+                    <div class="feature-title">Neon & Retro Filters</div>
+                    <div class="feature-desc">1-Click Grayscale, Sepia, Retro Invert aur Neon Hue filters se photos ko stylish banayein.</div>
+                </div>
+
+                <div class="feature-box" style="--accent-color: #7928ca; --glow-color: rgba(121, 40, 202, 0.25);">
+                    <div class="feature-icon">✍️</div>
+                    <div class="feature-title">Text & PIP Watermark</div>
+                    <div class="feature-desc">Custom text ya Picture-in-Picture (PIP) se apna watermark drag, rotate aur resize karke lagayein.</div>
+                </div>
+
+                <div class="feature-box" style="--accent-color: #f5d020; --glow-color: rgba(245, 208, 32, 0.25);">
+                    <div class="feature-icon">🗜️</div>
+                    <div class="feature-title">Live Compression Control</div>
+                    <div class="feature-desc">Slider se PDF size adjust karein aur live estimated size (KB/MB) pehle hi dekhein.</div>
+                </div>
+
+                <div class="feature-box" style="--accent-color: #ff4d4d; --glow-color: rgba(255, 77, 77, 0.25);">
+                    <div class="feature-icon">💾</div>
+                    <div class="feature-title">Smart Auto-Drafts</div>
+                    <div class="feature-desc">Kaam beech mein chhut gaya? App aapke project ko automatically save karke rakhti hai!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOW TO USE CONTAINER -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-icon">📖</div>
+                <h2>Kaise Use Karein?</h2>
+            </div>
+
+            <!-- Option A -->
+            <div class="option-container">
+                <div class="option-title">
+                    <span>🖼️</span> Option A: Images ➔ PDF (Photo se PDF)
+                </div>
+                <div class="steps-list">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><strong>Select Photos:</strong> Dashboard par "Images ➔ PDF" par click karke apni photos add karein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><strong>Edit & Customize:</strong> Adjust, Filters, Text, PIP ya Crop tools se images polish karein aur ⇇ ⇉ se reorder karein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-text"><strong>Set Quality:</strong> "Next" click karein, filename likhein aur compression slider se file size fix karein.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-text"><strong>Download:</strong> "Download Compressed PDF" dabayein aur aapki file ready!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option B -->
+            <div class="option-container">
+                <div class="option-title" style="color: #ff007f;">
+                    <span>📕</span> Option B: PDF ➔ Images (PDF se Photo Extraction)
+                </div>
+                <div class="steps-list">
+                    <div class="step-item" style="border-left-color: #00f2fe;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">1</div>
+                        <div class="step-text"><strong>Upload File:</strong> Dashboard par "PDF ➔ Images" select karke PDF file choose karein.</div>
+                    </div>
+                    <div class="step-item" style="border-left-color: #00f2fe;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">2</div>
+                        <div class="step-text"><strong>Auto Scan:</strong> App turant aapke har page ko high-resolution image me badal degi.</div>
+                    </div>
+                    <div class="step-item" style="border-left-color: #00f2fe;">
+                        <div class="step-num" style="background: linear-gradient(135deg, #00f2fe, #4facfe);">3</div>
+                        <div class="step-text"><strong>Export Images:</strong> Single page ke liye "Save Page" ya ek sath sabhi ke liye "Download All Images" par click karein.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRO TIPS CONTAINER -->
+        <div class="glass-card pro-tips-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(255, 0, 127, 0.2);">💡</div>
+                <h2 style="background: linear-gradient(90deg, #ff007f, #00ff87); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pro-Tips For Power Users</h2>
+            </div>
+            <div class="tip-list">
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Instant Undo/Redo:</strong> Edit karte waqt galti se bachein—Undo (↰) aur Redo (↱) controls ka use karein.</div>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Professional Branding:</strong> PIP Feature ka use karke apne business ka transparent PNG logo kisi bhi page par watermark ki tarah set karein.</div>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">✦</span>
+                    <div><strong>Clear Storage Easily:</strong> Drafts me purane projects save hote hain. Local memory free karne ke liye 'Clear All' ka use karein.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ==================== ULTIMATE PRO PDF SUITE SECTION END ==================== -->
+
+
+
+
+
+
+
+
+
+
+ 
 </div>
 
 <!-- PAGE 2: WORKSPACE -->
