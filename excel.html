@@ -167,23 +167,37 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 
-  .pdf-logo{
+/* ===== PDF ===== */
+.pdf-logo{
     color:#E53935;
     font-size:42px;
     filter:
-        drop-shadow(0 2px 2px rgba(240, 237, 237, 0.7))
-        drop-shadow(0 0 4px rgba(252, 251, 251, 0.4));
+        drop-shadow(0 2px 2px rgba(0,0,0,.7))
+        drop-shadow(0 0 4px rgba(0,0,0,.4));
 }
+
+/* ===== Images ===== */
 .img-logo{
     color:#ffffff;
     font-size:40px;
-    filter: drop-shadow(2px 2px 3px rgba(0,0,0,.7));
+    filter:
+        drop-shadow(2px 2px 3px rgba(0,0,0,.7));
 }
 
+/* ===== Excel ===== */
 .excel-logo{
     color:#1D6F42;
     font-size:42px;
-    filter: drop-shadow(2px 2px 3px rgb(251, 250, 250));
+    filter:
+        drop-shadow(0 2px 2px rgba(0,0,0,.7))
+        drop-shadow(0 0 4px rgba(0,0,0,.4));
+}
+.excel-logo,
+.ppt-logo,       
+.pdf-logo,{
+    font-size:42px;
+    color:#E53935; /* PPT ke liye alag color */
+    -webkit-text-stroke:0.2px rgba(255, 255, 255, 0.973);
 }
 </style>
 </head>
