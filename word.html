@@ -6,6 +6,7 @@
 <title>Ultimate Pro Document Suite</title>
 
 <!-- External Core Libraries -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -164,6 +165,35 @@ body {
 }
 .loader-text { color: #00ddff; font-size: 18px; font-weight: bold; letter-spacing: 1px;}
 @keyframes spin { to { transform: rotate(360deg); } }
+
+  .word-logo{
+    color:#2B579A;
+    font-size:42px;
+    filter:
+        drop-shadow(0 2px 2px rgba(0,0,0,.7))
+        drop-shadow(0 0 4px rgba(0,0,0,.4));
+}
+
+.pdf-logo{
+    color:#E53935;
+    font-size:42px;
+    filter:
+        drop-shadow(0 2px 2px rgba(37, 37, 37, 0.7))
+        drop-shadow(0 0 4px rgba(59, 58, 58, 0.4));
+}
+
+.img-logo{
+    color:#ffffff;
+    font-size:40px;
+    filter: drop-shadow(2px 2px 3px rgba(74, 71, 71, 0.7));
+}
+
+.pdf-logo,
+.word-logo{
+    font-size:42px;
+    color:#E53935; /* PPT ke liye alag color */
+    -webkit-text-stroke:0.2px rgba(255, 255, 255, 0.973);
+}
 </style>
 </head>
 <body>
@@ -180,18 +210,33 @@ body {
   <div class="header">WORD TO IMAGES</div>
   
   <div style="margin: 20px 0;">
-    <h3 style="color:white; margin-bottom:8px;">𝙒𝙊𝙍𝘿 ⇉ 𝙋𝘿𝙁</h3>
-    <button class="dash-btn" onclick="startNewProject()">📘 To 📕</button>
-    
-    <h3 style="color:white; margin-bottom:8px;">𝙒𝙊𝙍𝘿 ⇉ 𝙄𝙈𝘼𝙂𝙀𝙎</h3>
-    <button class="dash-btn" onclick="showPage(4)">📘 To 🏞️</button>
-    
-    <h3 style="color:white; margin-bottom:8px;">𝙋𝘿𝙁 ⇉ 𝙒𝙊𝙍𝘿</h3>
-    <button class="dash-btn" onclick="triggerPdfToWordConverter()">📕 To 📘</button>
-    
-    <h3 style="color:white; margin-bottom:8px;">𝙄𝙈𝘼𝙂𝙀𝙎 ⇉ 𝙒𝙊𝙍𝘿</h3>
-    <button class="dash-btn" onclick="triggerImagesToWordConverter()">🏞️ To 📘</button>
-    
+<h3 style="color:white; margin-bottom:8px;">𝙒𝙊𝙍𝘿 ⇉ 𝙋𝘿𝙁</h3>
+<button class="dash-btn" onclick="startNewProject()">
+    <i class="fa-solid fa-file-word word-logo"></i>
+    ➜
+    <i class="fa-solid fa-file-pdf pdf-logo"></i>
+</button>
+
+<h3 style="color:white; margin-bottom:8px;">𝙒𝙊𝙍𝘿 ⇉ 𝙄𝙈𝘼𝙂𝙀𝙎</h3>
+<button class="dash-btn" onclick="showPage(4)">
+    <i class="fa-solid fa-file-word word-logo"></i>
+    ➜
+    <i class="fa-solid fa-images img-logo"></i>
+</button>
+
+<h3 style="color:white; margin-bottom:8px;">𝙋𝘿𝙁 ⇉ 𝙒𝙊𝙍𝘿</h3>
+<button class="dash-btn" onclick="triggerPdfToWordConverter()">
+    <i class="fa-solid fa-file-pdf pdf-logo"></i>
+    ➜
+    <i class="fa-solid fa-file-word word-logo"></i>
+</button>
+
+<h3 style="color:white; margin-bottom:8px;">𝙄𝙈𝘼𝙂𝙀𝙎 ⇉ 𝙒𝙊𝙍𝘿</h3>
+<button class="dash-btn" onclick="triggerImagesToWordConverter()">
+    <i class="fa-solid fa-images img-logo"></i>
+    ➜
+    <i class="fa-solid fa-file-word word-logo"></i>
+</button>
     <input type="file" id="pdfToWordFileInput" accept=".pdf" style="display:none;" onchange="processPdfToWord(event)">
     <input type="file" id="imagesToWordFileInput" accept="image/*" multiple style="display:none;" onchange="processImagesToWord(event)">
   </div>
