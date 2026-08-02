@@ -6,6 +6,7 @@
 <title>Ultimate Pro PPT Suite</title>
 
 <!-- External Core Libraries -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -162,6 +163,35 @@ body {
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
 }
+
+  .pdf-logo{
+    color:#E53935;
+    font-size:42px;
+    filter:
+        drop-shadow(0 2px 2px rgba(255, 253, 253, 0.7))
+        drop-shadow(0 0 4px rgba(250, 248, 248, 0.4));
+}
+
+.img-logo{
+    color:#ffffff;
+    font-size:40px;
+    filter: drop-shadow(2px 2px 3px rgba(74, 71, 71, 0.7));
+}
+
+.ppt-logo{
+    color:#D24726;
+    font-size:42px;
+    filter:
+        drop-shadow(0 2px 2px rgba(244, 241, 241, 0.7))
+        drop-shadow(0 0 4px rgba(255, 253, 253, 0.4));
+}
+
+.pdf-logo,
+.ppt-logo{
+    font-size:42px;
+    color:#E53935; /* PPT ke liye alag color */
+    -webkit-text-stroke:0.2px rgba(255, 255, 255, 0.973);
+}
 .loader-text { color: #ffaa00; font-size: 18px; font-weight: bold; letter-spacing: 1px;}
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
@@ -181,17 +211,26 @@ body {
   
   <div style="margin: 20px 0;">
     <h3 style="color:white; margin-bottom:8px;">𝙋𝙋𝙏 ⇉ 𝙋𝘿𝙁</h3>
-    <button class="dash-btn" onclick="startNewProject()">🟧 ⇉ 📕</button>
-    
-    <h3 style="color:white; margin-bottom:8px;">𝙋𝙋𝙏 ⇉  𝙄𝙈𝘼𝙂𝙀𝙎</h3>
-    <button class="dash-btn" onclick="showPage(4)">🟧 ⇉ 🏞️</button>
-    
+    <button class="dash-btn" onclick="startNewProject()">
+        <i class="fa-solid fa-file-powerpoint ppt-logo"></i>
+        ➜
+        <i class="fa-solid fa-file-pdf pdf-logo"></i>
+    </button>
+
+    <h3 style="color:white; margin-bottom:8px;">𝙋𝙋𝙏 ⇉ 𝙄𝙈𝘼𝙂𝙀𝙎</h3>
+    <button class="dash-btn" onclick="showPage(4)">
+        <i class="fa-solid fa-file-powerpoint ppt-logo"></i>
+        ➜
+        <i class="fa-solid fa-images img-logo"></i>
+    </button>
+
     <h3 style="color:white; margin-bottom:8px;">𝙋𝘿𝙁 ⇉ 𝙋𝙋𝙏</h3>
-    <button class="dash-btn" onclick="triggerPdfToPptConverter()">📕 ⇉ 🟧</button>
-    
-    <h3 style="color:white; margin-bottom:8px;">𝙄𝙈𝘼𝙂𝙀𝙎 ⇉ 𝙋𝙋𝙏</h3>
-    <button class="dash-btn" onclick="triggerImagesToPptConverter()">🏞️ ⇉ 🟧</button>
-    
+    <button class="dash-btn" onclick="triggerPdfToPptConverter()">
+        <i class="fa-solid fa-file-pdf pdf-logo"></i>
+        ➜
+        <i class="fa-solid fa-file-powerpoint ppt-logo"></i>
+    </button>
+
     <input type="file" id="pdfToPptFileInput" accept=".pdf" style="display:none;" onchange="processPdfToPpt(event)">
     <input type="file" id="imagesToPptFileInput" accept="image/*" multiple style="display:none;" onchange="processImagesToPpt(event)">
   </div>
