@@ -18,10 +18,12 @@
 
 <style>
 :root {
-  --bg-deep: #09090b;
-  --card-glass: rgba(16, 18, 27, 0.7);
+  --bg-deep: #05050f;
+  --card-glass: rgba(16, 18, 27, 0.6);
   --accent-cyan: #00f0ff;
   --accent-pink: #ff007c;
+  --accent-purple: #9d00ff;
+  --accent-green: #00ff88;
   --text-light: #f8fafc;
   --text-muted: #94a3b8;
   --border-glow: rgba(0, 240, 255, 0.25);
@@ -34,6 +36,69 @@ body {
   background: var(--bg-deep);
   overflow-x: hidden;
   user-select: none;
+  min-height: 100vh;
+}
+
+/* === ANIMATED BACKGROUND ORBS === */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  z-index: -1;
+  animation: floatOrb 10s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+.orb-1 { width: 400px; height: 400px; background: rgba(0, 240, 255, 0.15); top: -100px; left: -100px; }
+.orb-2 { width: 500px; height: 500px; background: rgba(255, 0, 124, 0.15); bottom: -150px; right: -100px; animation-delay: -5s; }
+@keyframes floatOrb {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(50px) scale(1.1); }
+}
+
+/* === SHINY GLOW EFFECT (0.01s Response) === */
+.ai-hover-btn {
+  background: var(--card-glass);
+  border: 1px solid var(--border-glow);
+  border-radius: 16px;
+  color: var(--text-light);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  transition: all 0.01s ease !important; /* Instant touch response */
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-hover-btn::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+  transition: height 0.01s ease;
+}
+.ai-hover-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-25deg);
+  transition: none;
+}
+/* Hover & Touch Trigger */
+.ai-hover-btn:hover, .ai-hover-btn.glow-active {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
+  transform: scale(0.98);
+}
+.ai-hover-btn:hover::after, .ai-hover-btn.glow-active::after {
+  animation: shineFlash 0.4s ease-out forwards;
+}
+@keyframes shineFlash {
+  0% { left: -100%; }
+  100% { left: 200%; }
 }
 
 .header {
@@ -42,9 +107,10 @@ body {
   font-size: 32px;
   padding: 10px;
   font-weight: 900;
-  background: linear-gradient(90deg, red,red, gold, yellow);
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink), var(--accent-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0,240,255,0.2);
   letter-spacing: 1px;
 }
 
@@ -53,22 +119,38 @@ body {
 
 .dash-btn {
   width: 100%;
-  height: 80px;
-  font-size: 38px;
-  border-radius: 16px;
-  border: 1px solid white;
-  background: linear-gradient(135deg, red,rgb(124, 47, 212));
-  color: white;
-  cursor: pointer;
-  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 90px;
+  font-size: 28px;
+  gap: 20px;
+  font-weight: 800;
   margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  box-shadow: none;
 }
-.dash-btn:hover { transform: translateY(-3px); border-color: yellow; }
+
+/* === COLORFUL SPINNER OVERLAY === */
+.loader-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 5, 0.85); backdrop-filter: blur(15px); z-index: 99999;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.1s ease;
+}
+.loader-overlay.show { opacity: 1; pointer-events: auto; }
+.colorful-spinner {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: conic-gradient(var(--accent-pink), var(--accent-cyan), var(--accent-green), var(--accent-purple), var(--accent-pink));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+  animation: spinRing 0.8s linear infinite;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+}
+.loader-text {
+  margin-top: 20px; font-size: 18px; font-weight: 800; letter-spacing: 1px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: pulse 1s infinite alternate;
+}
+@keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+
 
 .back-btn, .home-btn, .next-preview-btn {
   position: fixed;
@@ -83,7 +165,7 @@ body {
   color: white;
   backdrop-filter: blur(10px);
 }
-.back-btn { left: 10px; background: transparent; }
+.back-btn { left: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
 .home-btn { right: 10px; background: rgba(255, 98, 0, 0.8); }
 .next-preview-btn { 
   right: 15px; 
@@ -250,7 +332,6 @@ body {
 .movable-layer.selected .layer-handle { display: flex; }
 
 .handle-delete { top: -14px; left: -14px; background: #ff4a4a; color: white; cursor: pointer; }
-/* Ek single dot jo dono kaam karega */
 .handle-resize { 
   bottom: -10px; 
   right: -10px; 
@@ -260,40 +341,21 @@ body {
   height: 16px !important; 
   cursor: nwse-resize; 
 }
-/* Rotate handle ki ab zarurat nahi hai */
 .handle-rotate { display: none !important; }
 
-/* In-place Text Editing */
-
-.editable-text-overlay:focus {
-  border-color: var(--accent-cyan);
-}
-/* In-place Text Editing */
+.editable-text-overlay:focus { border-color: var(--accent-cyan); }
 .editable-text-overlay {
   background: transparent;
-  border: 1px dashed transparent; /* Phele border hide rahegi */
-  color: white;
-  outline: none;
-  resize: none;
-  overflow: hidden;
-  text-align: center;
-  font-weight: 800;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-  margin: 0;
-  padding: 5px 10px;
-  display: inline-block;
-  min-width: 30px;
-  pointer-events: auto;
-  white-space: pre; /* Text auto next-line me nahi jayega, Width badhegi. Enter dabane par hi neeche jayega */
+  border: 1px dashed transparent; 
+  color: white; outline: none; resize: none; overflow: hidden;
+  text-align: center; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  margin: 0; padding: 5px 10px; display: inline-block; min-width: 30px;
+  pointer-events: auto; white-space: pre; 
 }
 
-/* Border sirf tab dikhegi jab text box select (click) hoga */
-.movable-layer.selected .editable-text-overlay {
-  border-color: rgba(255, 255, 255, 0.5);
-}
-.editable-text-overlay:focus {
-  border-color: var(--accent-cyan) !important;
-}
+.movable-layer.selected .editable-text-overlay { border-color: rgba(255, 255, 255, 0.5); }
+.editable-text-overlay:focus { border-color: var(--accent-cyan) !important; }
+
 /* EDIT PANEL */
 .edit-panel {
   position: fixed;
@@ -309,15 +371,9 @@ body {
 }
 
 .sub-panel {
-  display: none;
-  padding: 15px 20px;
-  background: var(--card-glass);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  overflow-x: auto;
-  gap: 20px;
-  align-items: center;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  display: none; padding: 15px 20px; background: var(--card-glass);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05); overflow-x: auto; gap: 20px; align-items: center;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
 }
 .sub-panel::-webkit-scrollbar { display: none; }
 .sub-panel.active { display: flex; }
@@ -363,41 +419,28 @@ body {
 .effect-btn:hover .effect-icon { border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); }
 .effect-btn span { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
 
-/* Loader */
-.loader-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(5, 5, 15, 0.85); backdrop-filter: blur(20px); z-index: 99999;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-}
-.loader-overlay.show { opacity: 1; pointer-events: auto; }
-.spinner {
-  width: 60px; height: 60px; border: 4px solid rgba(0, 240, 255, 0.15); border-top-color: var(--accent-cyan);
-  border-right-color: var(--accent-pink); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loader-text { font-weight: 700; font-size: 16px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
 /* Drafts & Previews */
 .draft-card {
-  background: #141416; border: 1px solid white; border-radius: 16px; padding: 15px;
-  display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 15px;
+  padding: 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 15px;
 }
-.draft-left { display: flex; align-items: center; gap: 15px; }
-.draft-thumb { width: 75px; height: 75px; object-fit: cover; border-radius: 12px; border: 2px solid white; }
+.draft-left { display: flex; align-items: center; gap: 15px; pointer-events: none;}
+.draft-thumb { width: 75px; height: 75px; object-fit: cover; border-radius: 12px; border: 2px solid var(--accent-cyan); }
 .draft-details h4 { margin: 0 0 5px 0; font-size: 16px; color: white; }
-.draft-meta { font-size: 12px; color: #71717a; display: flex; gap: 10px; flex-wrap: wrap; }
-.draft-actions { display: flex; flex-direction: column; gap: 8px; }
-.draft-actions button { padding: 6px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; }
-.btn-cont { background: #00ffcc; color: black; }
-.btn-del { background: rgba(255,0,85,0.2); color: #ff0055; }
+.draft-meta { font-size: 12px; color: #a1a1aa; display: flex; gap: 10px; flex-wrap: wrap; }
+.draft-actions { display: flex; flex-direction: column; gap: 8px; z-index: 10;}
+.draft-actions button { padding: 6px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+.btn-cont { background: var(--accent-cyan); color: black; }
+.btn-cont:hover { background: white; box-shadow: 0 0 15px var(--accent-cyan); }
+.btn-del { background: rgba(255,0,124,0.1); color: var(--accent-pink); border: 1px solid var(--accent-pink); }
+.btn-del:hover { background: var(--accent-pink); color: white; box-shadow: 0 0 15px var(--accent-pink); }
 
 #pdfPreview, #pdfToImgPreview { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top: 20px; }
 .preview-item-wrapper { position: relative; background: #141416; border-radius: 10px; padding: 5px; }
 .preview-item-wrapper img { width: 100%; border-radius: 8px; }
 .preview-delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,0,85,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
 
-.back-to-index { position: fixed; top: 10px; left: 10px; background: transparent; border: none; color: white; font-size: 30px; cursor: pointer; padding: 0; z-index: 9999; }
+.back-to-index { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; padding: 5px 15px; color: white; font-size: 20px; cursor: pointer; z-index: 9999; transition: 0.3s; }
+.back-to-index:hover { background: rgba(255,255,255,0.3); }
 
 /* Cropper touch fix */
 .cropper-container,
@@ -411,32 +454,26 @@ body {
 .cropper-drag-box { pointer-events: none !important; }
 .crop-mode-active .cropper-drag-box { pointer-events: auto !important; touch-action: none !important; }
 
-/* ===== PDF ===== */
 .pdf-logo{
-    color:#E53935;
+    color: var(--accent-pink);
     font-size:42px;
-    filter:
-        drop-shadow(0 2px 2px rgba(0,0,0,.7))
-        drop-shadow(0 0 4px rgba(0,0,0,.4));
+    filter: drop-shadow(0 0 10px rgba(255,0,124,0.6));
 }
-
-/* ===== Images ===== */
 .img-logo{
-    color:#ffffff;
+    color: var(--accent-cyan);
     font-size:40px;
-    filter:
-        drop-shadow(2px 2px 3px rgba(0,0,0,.7));
-}    
-.pdf-logo{
-    font-size:42px;
-    -webkit-text-stroke:0.2px rgba(255, 255, 255, 0.973);
+    filter: drop-shadow(0 0 10px rgba(0,240,255,0.6));
 }
 </style>
 </head>
 <body>
 
+<!-- Animated Orbs for the Deep Background -->
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
 <div id="loaderModal" class="loader-overlay">
-  <div class="spinner"></div>
+  <div class="colorful-spinner"></div>
   <div id="loaderText" class="loader-text">Processing...</div>
 </div>
 
@@ -445,34 +482,45 @@ body {
 <!-- PAGE 1: MAIN DASHBOARD -->
 <div id="page1" class="page active">
   <button class="back-to-index" onclick="window.location.href='index.html'">←</button>
-  <div class="header">... 𝙋𝘿𝙁  ⇄  𝙄𝙈𝘼𝙂𝙀𝙎 ...</div>
-  <div style="margin: 30px 0;">
+  <div class="header">PDF  ⇄  IMAGES</div>
+  <div style="margin: 40px 0;">
 
-    <h2>𝙄𝙈𝘼𝙂𝙀𝙎 ⇉  𝙋𝘿𝙁</h2>
-   <button class="dash-btn" onclick="startNewProject()">
-    <i class="fa-solid fa-images img-logo"></i>
-    ➜
-    <i class="fa-solid fa-file-pdf pdf-logo"></i>
-</button>
+    <h2 style="font-size: 16px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">Images to PDF Suite</h2>
+    
+    <!-- Added ai-hover-btn with touch events for instant 0.01s feedback -->
+    <button class="dash-btn ai-hover-btn" 
+            ontouchstart="this.classList.add('glow-active')" 
+            ontouchend="this.classList.remove('glow-active')" 
+            onclick="transitionToPage(() => startNewProject())">
+      <i class="fa-solid fa-images img-logo"></i>
+      <i class="fa-solid fa-arrow-right-long" style="font-size:20px; color:white;"></i>
+      <i class="fa-solid fa-file-pdf pdf-logo"></i>
+    </button>
 
 
-    <h2>𝙋𝘿𝙁  ⇉  𝙄𝙈𝘼𝙂𝙀𝙎</h2>
-   <button class="dash-btn" onclick="showPage(4)">
-    <i class="fa-solid fa-file-pdf pdf-logo"></i>
-    ➜
-    <i class="fa-solid fa-images img-logo"></i>
-</button>
+    <h2 style="font-size: 16px; color: var(--text-muted); text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; letter-spacing: 1px;">PDF to Images Extractor</h2>
+    
+    <button class="dash-btn ai-hover-btn" 
+            ontouchstart="this.classList.add('glow-active')" 
+            ontouchend="this.classList.remove('glow-active')" 
+            onclick="transitionToPage(() => showPage(4))">
+      <i class="fa-solid fa-file-pdf pdf-logo"></i>
+      <i class="fa-solid fa-arrow-right-long" style="font-size:20px; color:white;"></i>
+      <i class="fa-solid fa-images img-logo"></i>
+    </button>
 
   </div>
 
-  <hr style="border-color: rgba(255,255,255,0.05); margin: 30px 0;">
+  <hr style="border-color: var(--border-glow); margin: 40px 0;">
   
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-    <h3 style="margin:0; font-size:20px; font-weight:800;">📂 Drafts</h3>
-    <button onclick="deleteAllDrafts()" style="background:none; border:none; color:#ff0055; cursor:pointer; font-weight:bold;">Clear All</button>
+    <h3 style="margin:0; font-size:20px; font-weight:800; color:white; text-shadow: 0 0 10px rgba(0,240,255,0.3);">📂 Saved Drafts</h3>
+    <button onclick="deleteAllDrafts()" style="background:transparent; border:1px solid var(--accent-pink); color:var(--accent-pink); border-radius: 8px; padding: 5px 12px; cursor:pointer; font-weight:bold; transition: 0.3s;">Clear All</button>
   </div>
   
   <div id="draftList"></div>
+
+
 
 
 
@@ -941,6 +989,8 @@ body {
 
 
 
+
+
  
 </div>
 
@@ -1066,16 +1116,16 @@ body {
   <button class="home-btn" onclick="goHome()">🏠 Home</button>
   
   <div style="margin-top: 60px; text-align:center;">
-    <input type="text" id="pdfName" placeholder="Enter PDF Name..." style="background:white; border:1px solid #e5f504; color:black; padding:12px; width:80%; max-width:300px; border-radius:10px; font-size:16px; margin-bottom:15px;">
+    <input type="text" id="pdfName" placeholder="Enter PDF Name..." style="background:transparent; border:1px solid var(--accent-cyan); color:white; padding:12px; width:80%; max-width:300px; border-radius:10px; font-size:16px; margin-bottom:15px; outline:none;">
     
-    <div style="background:#141416; padding:15px; border-radius:12px; max-width:350px; margin: 10px auto; border: 1px solid rgba(255,255,255,0.05);">
-      <div style="margin-bottom:10px; font-weight:bold; color:#ff2f00;">Estimated Size: <span id="livePdfSizeDisplay">0 KB</span></div>
+    <div style="background:var(--card-glass); padding:15px; border-radius:12px; max-width:350px; margin: 10px auto; border: 1px solid var(--border-glow); backdrop-filter: blur(10px);">
+      <div style="margin-bottom:10px; font-weight:bold; color:var(--accent-pink);">Estimated Size: <span id="livePdfSizeDisplay">0 KB</span></div>
       <label style="font-size:14px; color:#a1a1aa;">Compress Quality Control</label>
-      <input type="range" id="compressSlider" min="10" max="100" value="90" style="width:100%; accent-color:#ff1100;" onchange="calculateLivePdfMetrics()">
+      <input type="range" id="compressSlider" min="10" max="100" value="90" style="width:100%; accent-color:var(--accent-cyan);" onchange="calculateLivePdfMetrics()">
     </div>
 
     <div style="margin: 20px 0;">
-      <button onclick="generateAndSavePDF()" style="background:#ff3300; color:black; font-weight:bold; padding:12px 24px; border-radius:30px; border:none; cursor:pointer; font-size:16px;">Download PDF</button>
+      <button onclick="generateAndSavePDF()" style="background:linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); color:white; font-weight:bold; padding:12px 24px; border-radius:30px; border:none; cursor:pointer; font-size:16px; box-shadow: 0 0 15px rgba(255,0,124,0.4);">Download PDF</button>
     </div>
   </div>
   <div id="pdfPreview"></div>
@@ -1084,16 +1134,16 @@ body {
 <!-- PAGE 4: PDF TO IMAGE -->
 <div id="page4" class="page">
   <button class="back-btn" onclick="showPage(1)">⬅ Back</button>
-  <h2 style="margin-top:70px; text-align:center; font-weight:900; color:white;">📕 PDF to Image Converter</h2>
+  <h2 style="margin-top:70px; text-align:center; font-weight:900; color:white; text-shadow: 0 0 10px rgba(0,240,255,0.4);">📕 PDF to Image Converter</h2>
   
   <div style="text-align:center; margin:20px 0;">
-    <label style="background:linear-gradient(45deg, #00ffcc, #0096ff); color:black;border:3px solid #fbfcfc; font-weight:bold; padding:14px 28px; border-radius:30px ; cursor:pointer; display:inline-block;">
+    <label style="background:linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); color:white; font-weight:bold; padding:14px 28px; border-radius:30px ; cursor:pointer; display:inline-block; border: 2px solid transparent; box-shadow: 0 0 15px rgba(0,240,255,0.4);">
       📂 𝙎𝙚𝙡𝙚𝙘𝙩 𝙋𝘿𝙁 𝙁𝙞𝙡𝙚
       <input type="file" id="pdfInputSource" accept="application/pdf" onchange="processPdfToImageConversion(event)" style="display:none;">
     </label>
     <div id="conversionStatus" style="margin-top:10px; color:#a1a1aa;"></div>
     
-    <button id="downloadAllImagesBtn" onclick="downloadAllExtractedImages()" style="background:red; color:white; font-weight:bold; padding:10px 20px; border-radius:20px; border:none; margin-top:15px; display:none; cursor:pointer;">📥 Download All Images</button>
+    <button id="downloadAllImagesBtn" onclick="downloadAllExtractedImages()" style="background:var(--accent-pink); color:white; font-weight:bold; padding:10px 20px; border-radius:20px; border:none; margin-top:15px; display:none; cursor:pointer; box-shadow: 0 0 15px rgba(255,0,124,0.4);">📥 Download All Images</button>
   </div>
 
   <div id="pdfToImgPreview"></div>
@@ -1112,6 +1162,27 @@ let redoStack = [];
 
 let activeTarget = 'main';
 let globalZIndex = 100;
+
+// === PAGE TRANSITION & LOADER LOGIC ===
+function showLoader(msg) {
+  document.getElementById("loaderText").innerText = msg || "Processing...";
+  document.getElementById("loaderModal").classList.add("show");
+}
+
+function hideLoader() { 
+  document.getElementById("loaderModal").classList.remove("show"); 
+}
+
+// Executes a 0.01s colorful flash loader before switching pages
+function transitionToPage(callback) {
+  showLoader("Loading Core...");
+  // Ultra fast 150ms timeout so user sees the colorful animation but it's instant
+  setTimeout(() => {
+    hideLoader();
+    callback();
+  }, 150);
+}
+
 
 const filterPresets = [
   { name: 'Original', filter: 'none' },
@@ -1195,11 +1266,6 @@ const snapEffects = [
   { name: "Dark Vignette", icon: "fa-circle-dot", type: "canvas", fn: (d, w, h, ctx) => { let g = ctx.createRadialGradient(w/2,h/2,w/4,w/2,h/2,w/1.2); g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,0.85)"); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); return false; } }
 ];
 
-function showLoader(msg) {
-  document.getElementById("loaderText").innerText = msg;
-  document.getElementById("loaderModal").classList.add("show");
-}
-function hideLoader() { document.getElementById("loaderModal").classList.remove("show"); }
 
 function getDefaultSetting() {
   return { 
@@ -1373,7 +1439,6 @@ function importImages(e) {
     imageSettings.push(getDefaultSetting());
   }
   
-  // FIX: Force a Draft ID creation on first image import if it doesn't exist
   if (!currentDraftId) {
       currentDraftId = Date.now();
   }
@@ -1652,7 +1717,7 @@ function renderFilterCards() {
     const card = document.createElement("div");
     card.className = "filter-card" + (p.filter === currentFilterCss || (idx===0 && currentFilterCss==='none') ? " active" : "");
     card.onclick = () => {
-      recordState(); // Undo trigger for filter selection
+      recordState(); 
       imageSettings[currentIndex].rawFilter = p.filter;
       renderFilterCards();
       updateFiltersDisplay();
@@ -1815,7 +1880,6 @@ function activateTextTool() {
   set.layerCounter = (set.layerCounter || 0) + 1;
   const layerId = 'text_' + set.layerCounter;
 
-  // FIX: Default color black se change karke white (#ffffff) kar diya gaya hai
   set.dynamicLayers[layerId] = { type: 'text', relX: 0.5, relY: 0.5, rotation: 0, fontSize: 28, color: '#ffffff', font: 'Inter', val: 'New Text' };
 
   renderDynamicLayer(layerId);
@@ -1826,7 +1890,6 @@ function activateTextTool() {
 
   activeTarget = layerId;
   
-  // Panel ki default values set ki gayi hain
   document.getElementById("textInputVal").value = "New Text";
   document.getElementById("textColorVal").value = "#ffffff";
   document.getElementById("textFontVal").value = "Inter";
@@ -1921,7 +1984,6 @@ function applyLayerTransform(layerId) {
   
   if(l.type === 'text') {
     const span = document.getElementById(layerId + "_span");
-    // Text box auto sizes perfectly based on font-size with contenteditable
     if(span) span.style.fontSize = l.fontSize + "px";
   } else {
     const imgEl = document.getElementById(layerId + "_img");
@@ -1949,12 +2011,10 @@ function attachLayerDrag(layerId) {
         document.querySelectorAll(".sub-panel").forEach(p => p.classList.remove("active"));
     }
 
-    let isMoved = false; // Track movement for undo/redo
+    let isMoved = false; 
 
     const onMove = (ev) => {
       if (ev.cancelable) ev.preventDefault();
-      
-      // Jaise hi user layer hilayega, purani position save ho jayegi
       if (!isMoved) { recordState(); isMoved = true; } 
 
       const cX = ev.type.startsWith('touch') ? ev.touches[0].clientX : ev.clientX;
@@ -2006,12 +2066,11 @@ function initAdvancedTransform(e, layerId, action) {
   const startSize = isText ? l.fontSize : Math.max(l.width, l.height);
   const startRot = l.rotation;
 
-  let isMoved = false; // Undo tracker 
+  let isMoved = false; 
 
   const onMove = (ev) => {
     if (ev.cancelable) ev.preventDefault();
 
-    // Size badalne se thik pehle state record hogi
     if (!isMoved) { recordState(); isMoved = true; } 
 
     const cX = ev.type.startsWith('touch') ? ev.touches[0].clientX : ev.clientX;
@@ -2299,7 +2358,6 @@ async function saveProjectDraft() {
   let sizeStr = (sizeInBytes / 1024).toFixed(1) + " KB";
   if(sizeInBytes > 1048576) sizeStr = (sizeInBytes / 1048576).toFixed(1) + " MB";
 
-  // FIX: Use Advanced Storage to bypass 5MB limit
   let allDrafts = await localforage.getItem("proPdfDrafts") || [];
   
   if (!currentDraftId) {
@@ -2310,7 +2368,7 @@ async function saveProjectDraft() {
     id: currentDraftId, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
     pdfName: document.getElementById("pdfName").value.trim() || "Untitled Project",
     images: compressedImages, 
-    settings: JSON.parse(JSON.stringify(imageSettings)), // Deep copy for safety
+    settings: JSON.parse(JSON.stringify(imageSettings)),
     pages: compressedImages.length, fileSize: sizeStr
   };
 
@@ -2339,7 +2397,7 @@ async function renderDraftSystem() {
   box.innerHTML = "";
   allDrafts.forEach(d => {
     box.innerHTML += `
-      <div class="draft-card">
+      <div class="draft-card ai-hover-btn" ontouchstart="this.classList.add('glow-active')" ontouchend="this.classList.remove('glow-active')">
         <div class="draft-left"><img class="draft-thumb" src="${d.images[0]}">
           <div class="draft-details">
             <h4>${d.pdfName}</h4>
@@ -2347,16 +2405,15 @@ async function renderDraftSystem() {
             <div class="draft-meta"><span>📅 ${d.date} at ${d.time}</span></div>
           </div>
         </div>
-        <div class="draft-actions"><button class="btn-cont" onclick="loadDraftProject(${d.id})">Open</button><button class="btn-del" onclick="removeDraftProject(${d.id})">Drop</button></div>
+        <div class="draft-actions"><button class="btn-cont" onclick="transitionToPage(() => loadDraftProject(${d.id}))">Open</button><button class="btn-del" onclick="removeDraftProject(${d.id})">Drop</button></div>
       </div>`;
   });
 }
 
 async function loadDraftProject(id) {
-  showLoader("Loading Project...");
   let allDrafts = await localforage.getItem("proPdfDrafts") || [];
   const draft = allDrafts.find(x => x.id === id);
-  if(!draft) { hideLoader(); return; }
+  if(!draft) return;
   
   images = [...draft.images]; 
   imageSettings = JSON.parse(JSON.stringify(draft.settings)); 
@@ -2368,10 +2425,7 @@ async function loadDraftProject(id) {
   
   showPage(2); 
   renderImages(currentIndex);
-  
-  // FIX: Force Undo/Redo to start tracking as soon as draft is opened
   recordState(); 
-  hideLoader();
 }
 
 async function removeDraftProject(id) {
@@ -2391,17 +2445,16 @@ async function goHome() {
   autoSaveCurrentFilterState();
 
   if (images.length > 0) {
-    await saveProjectDraft();   // Pehle save hoga
+    await saveProjectDraft();
   }
 
   resetAppSystem();
-  await renderDraftSystem();    // Draft list refresh hogi
+  await renderDraftSystem();
   showPage(1);
 }
 
 document.addEventListener("DOMContentLoaded", renderDraftSystem);
 
-// GLOBAL INPUT TRACKER: Slider pakadne ya text field par click karne par state save karta hai
 document.addEventListener("mousedown", (e) => {
   if (e.target.closest('.edit-panel') && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
     recordState();
@@ -2415,20 +2468,13 @@ document.addEventListener("touchstart", (e) => {
 
 function moveSelectedImage(direction) {
     if (currentIndex < 0) return;
-
     const newIndex = currentIndex + direction;
-
     if (newIndex < 0 || newIndex >= images.length) return;
-
     recordState();
     autoSaveCurrentFilterState();
-
     swapData(currentIndex, newIndex);
-
     currentIndex = newIndex;
-
     renderImages(currentIndex);
-
     setTimeout(() => {
     const selected = document.querySelector(".image-box.selected");
     if (selected) {
