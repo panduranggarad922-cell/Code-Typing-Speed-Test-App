@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI Image to Excel Pro Suite</title>
+
+<!-- External Core Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<!-- Tesseract JS for AI OCR (Text Detection) -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+<!-- ExcelJS for Advanced Excel Generation with Formatting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-deep: #05050f;
+  --card-glass: rgba(16, 18, 27, 0.6);
+  --accent-cyan: #00f0ff;
+  --accent-pink: #ff007c;
+  --accent-purple: #9d00ff;
+  --accent-green: #00ff88;
+  --text-light: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-glow: rgba(0, 240, 255, 0.25);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-light);
+  background: var(--bg-deep);
+  overflow-x: hidden;
+  user-select: none;
+  min-height: 100vh;
+}
+
+/* === ANIMATED BACKGROUND ORBS === */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  z-index: -1;
+  animation: floatOrb 10s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+.orb-1 { width: 400px; height: 400px; background: rgba(0, 240, 255, 0.15); top: -100px; left: -100px; }
+.orb-2 { width: 500px; height: 500px; background: rgba(255, 0, 124, 0.15); bottom: -150px; right: -100px; animation-delay: -5s; }
+@keyframes floatOrb {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(50px) scale(1.1); }
+}
+
+.header {
+  margin-top: 15px; 
+  text-align: center;
+  font-size: 38px;
+  padding: 10px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--text-light), var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0,240,255,0.2);
+  letter-spacing: 1px;
+}
+
+.page { display: none; padding: 20px; box-sizing: border-box; }
+.active { display: block; }
+
+/* === SHINY GLOW EFFECT (Buttons & Drafts) === */
+.ai-hover-btn {
+  background: var(--card-glass);
+  border: 1px solid var(--border-glow);
+  border-radius: 18px;
+  color: var(--text-light);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-hover-btn::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+  transition: height 0.3s ease;
+}
+.ai-hover-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-25deg);
+  transition: none;
+}
+/* Hover Trigger */
+.ai-hover-btn:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
+  transform: translateY(-5px);
+}
+.ai-hover-btn:hover::after {
+  animation: shineFlash 0.5s ease-out forwards;
+}
+@keyframes shineFlash {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+.dash-btn {
+  width: 100%;
+  height: 100px;
+  font-size: 28px;
+  gap: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.back-btn, .home-btn, .next-preview-btn {
+  position: fixed;
+  top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 30px;
+  z-index: 200500;
+  cursor: pointer;
+  border: 1px solid var(--border-glow);
+  color: white;
+  backdrop-filter: blur(10px);
+  background: rgba(16, 18, 27, 0.6);
+  transition: all 0.3s ease;
+}
+.back-btn:hover { box-shadow: 0 0 15px rgba(255,255,255,0.4); border-color: white; }
+.next-preview-btn { 
+  right: 15px; 
+  background: linear-gradient(45deg, var(--accent-cyan), #0096ff); 
+  color: black; 
+  border: none;
+}
+.next-preview-btn:hover { box-shadow: 0 0 20px var(--accent-cyan); transform: scale(1.05); }
+
+.top-import-container {
+  position: fixed;
+  top: 10px; left: 50%; transform: translateX(-50%); z-index: 200500; display: flex; justify-content: center;
+}
+.main-import-btn {
+  background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+  color: white; font-weight: 900; padding: 10px 22px; border-radius: 25px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px; font-size: 15px; border: 2px solid transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.main-import-btn:hover { box-shadow: 0 0 20px var(--accent-purple); transform: scale(1.05); }
+
+.workspace-wrapper {
+  position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 50px; touch-action: pan-x pan-y;
+}
+
+.image-container {
+  display: flex; gap: 20px; overflow-x: auto; padding: 20px; height: 350px; width: 100%; scroll-behavior: smooth; scrollbar-width: none; -webkit-overflow-scrolling: touch; align-items: center; scroll-snap-type: x mandatory;
+}
+.image-container::-webkit-scrollbar { display: none; }
+
+.image-box {
+  flex: 0 0 190px; height: 250px; border-radius: 18px; position: relative; background: #0a0a14; border: 2px solid rgba(255,255,255,0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; scroll-snap-align: center;
+}
+.image-box.selected {
+  flex: 0 0 250px; height: 310px; border-color: var(--accent-cyan); box-shadow: 0 0 25px rgba(0, 208, 255, 0.5); transform: scale(1.03); z-index: 10;
+}
+@media (max-width: 600px) {
+  .image-container { padding: 15px 8vw; height: 460px; transform: translateY(-20px); }
+  .image-box { flex: 0 0 78vw; height: 350px; }
+  .image-box.selected { flex: 0 0 84vw; height: 410px; }
+}
+
+.image-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 16px; pointer-events: none; }
+.index-tag { position: absolute; top: 12px; left: 12px; background: var(--accent-pink); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; z-index: 5; }
+
+/* EDIT PANEL */
+.edit-panel {
+  position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(5, 5, 15, 0.95); border-top: 1px solid var(--border-glow); backdrop-filter: blur(20px); z-index: 1000; display: flex; flex-direction: column;
+}
+.sub-panel { display: none; padding: 15px 20px; background: var(--card-glass); border-bottom: 1px solid rgba(255, 255, 255, 0.05); overflow-x: auto; gap: 20px; align-items: center; scrollbar-width: none; }
+.sub-panel.active { display: flex; }
+.slider-box { display: flex; flex-direction: column; gap: 6px; min-width: 130px; text-align: center; }
+.slider-box label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.slider-box input[type="range"] { width: 100%; accent-color: var(--accent-cyan); cursor: pointer; }
+
+.tool-bar { display: flex; overflow-x: auto; padding: 12px 15px; gap: 22px; white-space: nowrap; scrollbar-width: none; }
+.tool-btn { background: transparent; border: 1px solid transparent; border-radius: 12px; padding: 10px; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; transition: color 0.3s; }
+.tool-btn i { font-size: 20px; }
+.tool-btn:hover { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
+.tool-btn:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+/* === COLORFUL SPINNER OVERLAY === */
+.loader-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 99999;
+  display: none; justify-content: center; align-items: center; flex-direction: column;
+}
+.loader-overlay.active { display: flex; }
+.colorful-spinner {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: conic-gradient(var(--accent-pink), var(--accent-cyan), var(--accent-green), var(--accent-purple), var(--accent-pink));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+  animation: spinRing 0.8s linear infinite;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+}
+.loader-text {
+  margin-top: 20px; font-size: 18px; font-weight: 800; letter-spacing: 1px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: pulse 1s infinite alternate;
+}
+@keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+
+/* === DRAFTS SYSTEM === */
+.draft-card {
+  padding: 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 15px;
+}
+.draft-card::before { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); }
+.draft-left { display: flex; align-items: center; gap: 15px; pointer-events: none; }
+.draft-thumb { width: 75px; height: 75px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(0,240,255,0.3); }
+.draft-details h4 { margin: 0 0 5px 0; font-size: 16px; color: white; }
+.draft-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; }
+.draft-actions { display: flex; flex-direction: column; gap: 8px; z-index: 5; }
+.draft-actions button { padding: 8px 15px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s;}
+.btn-cont { background: var(--accent-cyan); color: black; }
+.btn-cont:hover { background: white; box-shadow: 0 0 15px var(--accent-cyan); }
+.btn-del { background: rgba(255,0,124,0.1); color: var(--accent-pink); border: 1px solid var(--accent-pink); }
+.btn-del:hover { background: var(--accent-pink); color: white; box-shadow: 0 0 15px var(--accent-pink); }
+
+.excel-logo { color: #00ffaa; font-size:46px; filter: drop-shadow(0 0 10px rgba(0,255,170,0.6)); }
+.img-logo { color: #00f0ff; font-size:42px; filter: drop-shadow(0 0 10px rgba(0,240,255,0.6)); }
+
+/* Cropper fix */
+.cropper-container, .cropper-wrap-box, .cropper-canvas, .cropper-crop-box, .cropper-face, .cropper-view-box { touch-action: none !important; }
+.crop-mode-active .cropper-drag-box { pointer-events: auto !important; touch-action: none !important; }
+</style>
+</head>
+<body>
+
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
+<div id="loaderModal" class="loader-overlay">
+  <div class="colorful-spinner"></div>
+  <div id="loaderText" class="loader-text">AI Matrix Scanning...</div>
+</div>
+
+<!-- PAGE 1: MAIN DASHBOARD -->
+<div id="page1" class="page active">
+  <div class="header">AI Extraction Suite</div>
+  <div style="text-align:center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">
+    Advanced Structural & Table Detection Engine
+  </div>
+
+  <div style="margin: 30px 0;">
+    <div class="dash-btn ai-hover-btn" onclick="startNewProject()">
+      <i class="fa-solid fa-images img-logo"></i>
+      <i class="fa-solid fa-arrow-right-long" style="font-size:20px; color:white;"></i>
+      <i class="fa-solid fa-file-excel excel-logo"></i>
+      <div style="margin-left: 10px;">Images to Excel</div>
+    </div>
+  </div>
+
+  <hr style="border-color: var(--border-glow); margin: 30px 0;">
+  
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+    <h3 style="margin:0; font-size:20px; font-weight:800; color:white;">📁 Document Drafts</h3>
+    <button onclick="deleteAllDrafts()" style="background:none; border:1px solid var(--accent-pink); border-radius:8px; padding:6px 12px; color:var(--accent-pink); cursor:pointer; font-weight:bold; transition: 0.3s;">Clear All</button>
+  </div>
+  
+  <div id="draftList"></div>
+</div>
+
+<!-- PAGE 2: WORKSPACE -->
+<div id="page2" class="page">
+  <button class="back-btn" onclick="goHome()">← Home</button>
+  
+  <div class="top-import-container">
+    <label class="main-import-btn">
+      <i class="fa-solid fa-plus"></i> Add Documents
+      <input type="file" accept="image/*" multiple onchange="importImages(event)" style="display:none;">
+    </label>
+  </div>
+
+  <button id="pdfBtn" class="next-preview-btn" onclick="startAIToExcelProcess()">
+    <i class="fa-solid fa-microchip"></i> Generate Excel
+  </button>
+  
+  <div class="workspace-wrapper" id="workspaceWrapper">
+    <div class="image-container" id="imageContainer"></div>
+  </div>
+
+  <div id="editPanel" class="edit-panel">
+    <div id="adjustPanel" class="sub-panel">
+      <button onclick="bakeAdvancedEffects()" style="background:var(--accent-cyan); color:black; border-radius:8px; padding:6px 14px; font-weight:bold; border:none; cursor:pointer;">Apply</button>
+      <div class="slider-box"><label>Brightness</label><input type="range" id="adj_brightness" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Contrast</label><input type="range" id="adj_contrast" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Saturation</label><input type="range" id="adj_saturation" min="-100" max="100" value="0" oninput="updateFilters()"></div>
+      <div class="slider-box"><label>Grayscale</label><input type="range" id="adj_grayscale" min="0" max="100" value="0" oninput="updateFilters()"></div>
+      <button onclick="resetAdjustments()" style="background:var(--accent-pink); color:white; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">Reset</button>
+    </div>
+
+    <div id="cropPanel" class="sub-panel">
+      <button class="tool-btn" onclick="setCanvasRatio('free')"><i class="fa-solid fa-expand"></i>Free</button>
+      <button class="tool-btn" onclick="setCanvasRatio(NaN)"><i class="fa-solid fa-image"></i>Original</button>
+      <div style="flex:1;"></div>
+      <button onclick="applyCrop()" style="background:var(--accent-green); color:#000; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;">✔ Apply</button>
+      <button onclick="cancelCrop()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;">Cancel</button>
+    </div>
+
+    <div class="tool-bar">
+      <button id="undoBtn" class="tool-btn" onclick="executeUndo()" disabled><i class="fa-solid fa-arrow-rotate-left"></i>Undo</button>
+      <button id="redoBtn" class="tool-btn" onclick="executeRedo()" disabled><i class="fa-solid fa-arrow-rotate-right"></i>Redo</button>
+      <button class="tool-btn" onclick="moveSelectedImage(-1)"><i class="fa-solid fa-arrow-left"></i> Left</button>
+      <button class="tool-btn" onclick="moveSelectedImage(1)"><i class="fa-solid fa-arrow-right"></i> Right</button>
+      <div style="width:1px; height:30px; background:rgba(255,255,255,0.2); margin:0 5px;"></div>
+      
+      <!-- AI CLEAN BUTTON ADDED HERE -->
+      <button class="tool-btn" onclick="applyAIClearScan()" style="color: var(--accent-green);"><i class="fa-solid fa-wand-magic-sparkles"></i>✨ AI Clean</button>
+      
+      <button class="tool-btn" onclick="switchSubPanel('adjustPanel')"><i class="fa-solid fa-sliders"></i>Adjust Docs</button>
+      <button class="tool-btn" onclick="startCropMode()"><i class="fa-solid fa-crop-simple"></i>Crop Table</button>
+      <button class="tool-btn" onclick="rotateCoreImg(90)"><i class="fa-solid fa-rotate-right"></i>Rotate</button>
+      <button class="tool-btn" onclick="smartDeleteAction()" style="color:var(--accent-pink);"><i class="fa-solid fa-trash"></i>Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let images = [];
+let imageSettings = [];
+let currentIndex = -1;
+let cropper = null;
+let currentDraftId = null;
+let undoStack = [];
+let redoStack = [];
+
+function showAILoader(msg) {
+  document.getElementById("loaderText").innerText = msg;
+  document.getElementById("loaderModal").classList.add("active");
+}
+function hideAILoader() { document.getElementById("loaderModal").classList.remove("active"); }
+
+function getDefaultSetting() {
+  return { brightness: 0, contrast: 0, saturation: 0, grayscale: 0, rawFilter: 'none' };
+}
+
+function recordState() {
+  undoStack.push(JSON.stringify({ images: [...images], settings: JSON.parse(JSON.stringify(imageSettings)), currentIndex }));
+  redoStack = []; updateUndoRedoUI();
+}
+
+function executeUndo() {
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify({ images: [...images], settings: JSON.parse(JSON.stringify(imageSettings)), currentIndex }));
+  const prevState = JSON.parse(undoStack.pop());
+  images = prevState.images; imageSettings = prevState.settings; currentIndex = prevState.currentIndex;
+  updateUndoRedoUI(); killCropper(); renderImages(currentIndex);
+}
+
+function executeRedo() {
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify({ images: [...images], settings: JSON.parse(JSON.stringify(imageSettings)), currentIndex }));
+  const nextState = JSON.parse(redoStack.pop());
+  images = nextState.images; imageSettings = nextState.settings; currentIndex = nextState.currentIndex;
+  updateUndoRedoUI(); killCropper(); renderImages(currentIndex);
+}
+
+function updateUndoRedoUI() {
+  document.getElementById("undoBtn").disabled = (undoStack.length === 0);
+  document.getElementById("redoBtn").disabled = (redoStack.length === 0);
+}
+
+function showPage(num) {
+  killCropper();
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page" + num).classList.add("active");
+  if(num === 1) renderDraftSystem();
+}
+
+function startNewProject() {
+  resetAppSystem(); showPage(2); renderImages();
+}
+
+function switchSubPanel(id) {
+  const target = document.getElementById(id);
+  const isOpen = target.classList.contains("active");
+  if (id !== 'cropPanel') document.getElementById("workspaceWrapper")?.classList.remove("crop-mode-active");
+  document.querySelectorAll(".sub-panel").forEach(p => p.classList.remove("active"));
+  if(!isOpen) target.classList.add("active");
+}
+
+function startCropMode() {
+  if(currentIndex < 0) return;
+  switchSubPanel('cropPanel');
+  const imgEl = document.querySelector(".image-box.selected img");
+  if(!cropper && imgEl) {
+    cropper = new Cropper(imgEl, { viewMode: 1, dragMode: 'crop', autoCrop: true, ready() { this.cropper.cropper.style.touchAction = "none"; }});
+  } else if(cropper) { cropper.setDragMode("none"); cropper.crop(); }
+  document.getElementById("workspaceWrapper")?.classList.add("crop-mode-active");
+}
+
+function cancelCrop() { killCropper(); }
+function killCropper() {
+  if (cropper) { cropper.destroy(); cropper = null; }
+  document.getElementById("workspaceWrapper")?.classList.remove("crop-mode-active");
+  document.getElementById("cropPanel").classList.remove("active");
+}
+
+function setCanvasRatio(ratio) { if(cropper) cropper.setAspectRatio(ratio === 'free' ? NaN : ratio); }
+function applyCrop() {
+  if (!cropper) return;
+  recordState(); showAILoader("Trimming Data bounds...");
+  setTimeout(() => {
+    images[currentIndex] = cropper.getCroppedCanvas().toDataURL("image/jpeg", 0.95);
+    killCropper(); renderImages(currentIndex); hideAILoader();
+  }, 400);
+}
+
+function importImages(e) {
+  const files = e.target.files; if(!files.length) return;
+  recordState();
+  for(let file of files) { images.push(URL.createObjectURL(file)); imageSettings.push(getDefaultSetting()); }
+  if (!currentDraftId) currentDraftId = Date.now();
+  currentIndex = 0; renderImages(currentIndex);
+}
+
+function renderImages(selected = currentIndex) {
+  const container = document.getElementById("imageContainer");
+  if (!container) return; container.innerHTML = "";
+  if(images.length === 0) {
+    container.innerHTML = `<div style="width:100%; text-align:center; padding-top:100px; color:var(--text-muted);"><span><i class="fa-solid fa-upload"></i> Import tables/documents</span></div>`;
+    document.getElementById("pdfBtn").style.display = "none"; return;
+  }
+  document.getElementById("pdfBtn").style.display = "block";
+  images.forEach((src, i) => {
+    const box = document.createElement("div");
+    box.className = "image-box" + (i === selected ? " selected" : "");
+    box.innerHTML = `<span class="index-tag">P ${i + 1}</span><img src="${src}">`;
+    box.onclick = (e) => { if (currentIndex !== i) { killCropper(); currentIndex = i; renderImages(currentIndex); }};
+    container.appendChild(box);
+  });
+  if (selected >= 0 && selected < images.length) {
+    currentIndex = selected; syncSlidersUI(currentIndex);
+    setTimeout(() => { const img = document.querySelector(".image-box.selected img"); if (img && !cropper) img.style.filter = buildFilterChain(imageSettings[currentIndex]); }, 50);
+  }
+}
+
+function swapData(i, j) { [images[i], images[j]] = [images[j], images[i]]; [imageSettings[i], imageSettings[j]] = [imageSettings[j], imageSettings[i]]; }
+function moveSelectedImage(dir) {
+    if (currentIndex < 0) return; const newIdx = currentIndex + dir;
+    if (newIdx < 0 || newIdx >= images.length) return;
+    recordState(); swapData(currentIndex, newIdx); currentIndex = newIdx; renderImages(currentIndex);
+}
+function smartDeleteAction() {
+  if (currentIndex < 0 || !images.length) return;
+  recordState(); images.splice(currentIndex, 1); imageSettings.splice(currentIndex, 1); currentIndex = images.length - 1; killCropper(); renderImages(currentIndex);
+}
+function rotateCoreImg(deg = 90) {
+  if(currentIndex < 0) return; recordState();
+  const c = document.createElement("canvas"), ctx = c.getContext("2d"), img = new Image();
+  img.onload = () => {
+    c.width = img.height; c.height = img.width; ctx.translate(c.width/2, c.height/2); ctx.rotate((deg*Math.PI)/180); ctx.drawImage(img, -img.width/2, -img.height/2);
+    images[currentIndex] = c.toDataURL("image/jpeg", 0.95); killCropper(); renderImages(currentIndex);
+  }; img.src = images[currentIndex];
+}
+
+/* === AI CLEAN / SHARPEN SYSTEM FOR BLURRY IMAGES === */
+function applyAIClearScan() {
+    if(currentIndex < 0) return;
+    recordState();
+    showAILoader("AI Enhancing & Cleaning Image...");
+    
+    setTimeout(() => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        
+        img.onload = () => {
+            canvas.width = img.width; canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            // Step 1: Grayscale & High Contrast for OCR Clarity
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                // Luminosity Grayscale
+                let gray = data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114;
+                // High Contrast Boost (+50%)
+                gray = ((gray / 255 - 0.5) * 1.5 + 0.5) * 255;
+                gray = Math.min(255, Math.max(0, gray));
+                
+                data[i] = data[i+1] = data[i+2] = gray;
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            // Step 2: Convolution Matrix (Sharpen Text Edges)
+            const w = canvas.width, h = canvas.height;
+            const mix = 0.6; // Sharpen intensity
+            const weights = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+            const kat = 3; const half = 1;
+            const dstData = ctx.createImageData(w, h);
+            const dstBuff = dstData.data;
+            const srcBuff = ctx.getImageData(0, 0, w, h).data;
+            
+            for (let i = 0; i < h; i++) {
+                for (let j = 0; j < w; j++) {
+                    const dstOff = (i * w + j) * 4;
+                    let r = 0, g = 0, b = 0;
+                    for (let cy = 0; cy < kat; cy++) {
+                        for (let cx = 0; cx < kat; cx++) {
+                            const scy = i + cy - half;
+                            const scx = j + cx - half;
+                            if (scy >= 0 && scy < h && scx >= 0 && scx < w) {
+                                const srcOff = (scy * w + scx) * 4;
+                                const wt = weights[cy * kat + cx];
+                                r += srcBuff[srcOff] * wt;
+                                g += srcBuff[srcOff + 1] * wt;
+                                b += srcBuff[srcOff + 2] * wt;
+                            }
+                        }
+                    }
+                    dstBuff[dstOff] = mix * r + (1 - mix) * srcBuff[dstOff];
+                    dstBuff[dstOff + 1] = mix * g + (1 - mix) * srcBuff[dstOff + 1];
+                    dstBuff[dstOff + 2] = mix * b + (1 - mix) * srcBuff[dstOff + 2];
+                    dstBuff[dstOff + 3] = srcBuff[dstOff + 3];
+                }
+            }
+            ctx.putImageData(dstData, 0, 0);
+
+            images[currentIndex] = canvas.toDataURL("image/jpeg", 0.95);
+            imageSettings[currentIndex] = getDefaultSetting(); // Reset filters as image is physically altered
+            syncSlidersUI(currentIndex); updateFilters();
+            
+            killCropper(); renderImages(currentIndex); hideAILoader();
+        };
+        img.src = images[currentIndex];
+    }, 200);
+}
+
+function syncSlidersUI(idx) {
+  const set = (idx >= 0 && imageSettings[idx]) ? imageSettings[idx] : getDefaultSetting();
+  ['brightness','contrast','saturation','grayscale'].forEach(k => { document.getElementById('adj_'+k).value = set[k] || 0; });
+}
+function updateFilters() {
+  if(currentIndex < 0) return; const set = imageSettings[currentIndex];
+  ['brightness','contrast','saturation','grayscale'].forEach(k => { set[k] = Number(document.getElementById('adj_'+k).value); });
+  const f = buildFilterChain(set);
+  const img = cropper ? document.querySelector(".cropper-canvas img") : document.querySelector(".image-box.selected img");
+  if(img) img.style.filter = f;
+}
+function buildFilterChain(set) { return `brightness(${100+(set.brightness||0)}%) contrast(${100+(set.contrast||0)}%) saturate(${100+(set.saturation||0)}%) grayscale(${set.grayscale||0}%)`; }
+function resetAdjustments() {
+  if(currentIndex<0) return; const set = imageSettings[currentIndex];
+  set.brightness=0; set.contrast=0; set.saturation=0; set.grayscale=0; syncSlidersUI(currentIndex); updateFilters();
+}
+function applyBakeEffect() {
+  if(currentIndex < 0) return; recordState();
+  const c = document.createElement("canvas"), ctx = c.getContext("2d"), img = new Image();
+  img.onload = () => {
+    c.width = img.width; c.height = img.height; ctx.filter = buildFilterChain(imageSettings[currentIndex]); ctx.drawImage(img, 0, 0);
+    images[currentIndex] = c.toDataURL("image/jpeg", 0.95); imageSettings[currentIndex] = getDefaultSetting();
+    syncSlidersUI(currentIndex); updateFilters(); killCropper(); renderImages(currentIndex);
+  }; img.src = images[currentIndex];
+}
+function bakeAdvancedEffects() { applyBakeEffect(); }
+
+function getCompositeImageUrl(idx) {
+  return new Promise((resolve) => {
+    const img = new Image(); img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+      const ctx = c.getContext("2d"); ctx.filter = buildFilterChain(imageSettings[idx]); ctx.drawImage(img, 0, 0);
+      resolve(c.toDataURL("image/jpeg", 1.0));
+    }; img.onerror = () => resolve(images[idx]); img.src = images[idx];
+  });
+}
+
+/* =========================================================
+   POWERFUL GEOMETRIC AI TABLE DETECTION ENGINE
+========================================================= */
+async function startAIToExcelProcess() {
+  if(!images.length) return;
+  showAILoader("Initializing AI Matrix...");
+  
+  try {
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Pro AI Extractor';
+    
+    for(let i = 0; i < images.length; i++) {
+        const sheet = workbook.addWorksheet(`Page_${i+1}`, { properties: { tabColor: { argb: 'FF00F0FF' } } });
+        for(let c = 1; c <= 30; c++) sheet.getColumn(c).width = 18;
+
+        showAILoader(`Deep Scanning Table Structure [${i+1}/${images.length}]...`);
+        const imgDataUrl = await getCompositeImageUrl(i);
+        
+        const worker = await Tesseract.createWorker({ logger: m => { if(m.status === 'recognizing text') showAILoader(`AI Reading: ${Math.round(m.progress * 100)}% [Img ${i+1}]`); }});
+        await worker.loadLanguage('eng'); await worker.initialize('eng');
+        const { data: { words } } = await worker.recognize(imgDataUrl);
+        
+        // --- ADVANCED GEOMETRIC CLUSTERING FOR PERFECT TABLES ---
+        if (words.length > 0) {
+            // 1. Cluster Rows via Y-coordinate
+            const Y_TOLERANCE = 15; // Vertical alignment precision
+            const X_TOLERANCE = 30; // Horizontal column precision
+            
+            words.sort((a,b) => a.bbox.y0 - b.bbox.y0); // Sort top to bottom
+            let rows = [];
+            let currentRow = [];
+            
+            words.forEach(w => {
+                if(currentRow.length === 0) {
+                    currentRow.push(w);
+                } else {
+                    let avgY = currentRow.reduce((sum, item) => sum + item.bbox.y0, 0) / currentRow.length;
+                    if(Math.abs(w.bbox.y0 - avgY) <= Y_TOLERANCE) {
+                        currentRow.push(w);
+                    } else {
+                        currentRow.sort((a,b) => a.bbox.x0 - b.bbox.x0); // Sort left to right
+                        rows.push(currentRow);
+                        currentRow = [w];
+                    }
+                }
+            });
+            if(currentRow.length > 0) { currentRow.sort((a,b) => a.bbox.x0 - b.bbox.x0); rows.push(currentRow); }
+
+            // 2. Identify Global Columns (Vertical Gutter Analysis)
+            let allX = words.map(w => w.bbox.x0).sort((a, b) => a - b);
+            let columns = [];
+            allX.forEach(x => {
+                if(columns.length === 0 || Math.abs(x - columns[columns.length - 1]) > X_TOLERANCE) {
+                    columns.push(x);
+                }
+            });
+
+            // 3. Map Matrix to Excel Grid
+            rows.forEach((rowWords, rowIndex) => {
+                rowWords.forEach(w => {
+                    let colIndex = 0;
+                    let minDiff = Infinity;
+                    // Find the closest mapped column
+                    columns.forEach((cx, idx) => {
+                        let diff = Math.abs(w.bbox.x0 - cx);
+                        if(diff < minDiff) { minDiff = diff; colIndex = idx; }
+                    });
+                    
+                    const cell = sheet.getCell(rowIndex + 1, colIndex + 1);
+                    cell.value = cell.value ? cell.value + ' ' + w.text : w.text;
+                    
+                    // Force Strict Black Text
+                    cell.font = { name: 'Arial', color: { argb: 'FF000000' }, bold: (w.font_size > 18 || w.is_bold) };
+                    cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+                });
+            });
+        }
+        await worker.terminate();
+    }
+    
+    showAILoader("Compiling XLSX Matrix...");
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a'); link.href = url; link.download = `AI_Extracted_Data_${Date.now()}.xlsx`;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    setTimeout(() => { URL.revokeObjectURL(url); }, 5000);
+    
+    hideAILoader();
+    await saveProjectDraft();
+  } catch(error) {
+    console.error(error); alert("System overload during extraction."); hideAILoader();
+  }
+}
+
+/* =========================================================
+   DRAFTS SYSTEM
+========================================================= */
+function compressImageForDraft(src) {
+  return new Promise((resolve) => {
+    const img = new Image(); img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const c = document.createElement("canvas"); let w = img.width, h = img.height; const max = 800;
+      if (w > max || h > max) { if (w > h) { h = Math.round((h * max) / w); w = max; } else { w = Math.round((w * max) / h); h = max; } }
+      c.width = w; c.height = h; const ctx = c.getContext("2d"); ctx.drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL("image/jpeg", 0.6));
+    }; img.onerror = () => resolve(src); img.src = src;
+  });
+}
+
+async function saveProjectDraft() {
+  const compressed = await Promise.all(images.map(img => compressImageForDraft(img)));
+  let size = 0; compressed.forEach(i => size += (i ? i.length * 0.75 : 0));
+  let sizeStr = size > 1048576 ? (size / 1048576).toFixed(1) + " MB" : (size / 1024).toFixed(1) + " KB";
+  let drafts = await localforage.getItem("aiExcelDraftsPro") || [];
+  if (!currentDraftId) currentDraftId = Date.now();
+
+  const draft = { id: currentDraftId, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString(), pdfName: "AI_Data_Extraction", images: compressed, settings: JSON.parse(JSON.stringify(imageSettings)), pages: compressed.length, fileSize: sizeStr };
+  const idx = drafts.findIndex(d => d.id === currentDraftId); 
+  if(idx !== -1) drafts[idx] = draft; else drafts.unshift(draft);
+  await localforage.setItem("aiExcelDraftsPro", drafts);
+}
+
+async function renderDraftSystem() {
+  const box = document.getElementById("draftList"); if(!box) return;
+  box.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Syncing Matrix...</div>`;
+  let drafts = await localforage.getItem("aiExcelDraftsPro") || [];
+  if(!drafts.length) { box.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">No drafts extracted yet.</div>`; return; }
+  box.innerHTML = "";
+  drafts.forEach(d => {
+    box.innerHTML += `
+      <div class="draft-card ai-hover-btn">
+        <div class="draft-left"><img class="draft-thumb" src="${d.images[0]}">
+          <div class="draft-details">
+            <h4>${d.pdfName}</h4>
+            <div class="draft-meta"><span>📄 ${d.pages} Tables</span><span>📦 ${d.fileSize}</span></div>
+            <div class="draft-meta"><span>📅 ${d.date} at ${d.time}</span></div>
+          </div>
+        </div>
+        <div class="draft-actions"><button class="btn-cont" onclick="loadDraftProject(${d.id})">Open</button><button class="btn-del" onclick="removeDraftProject(${d.id})">Delete</button></div>
+      </div>`;
+  });
+}
+
+async function loadDraftProject(id) {
+  showAILoader("Restoring Data...");
+  let drafts = await localforage.getItem("aiExcelDraftsPro") || [];
+  const draft = drafts.find(x => x.id === id);
+  if(!draft) { hideAILoader(); return; }
+  images = [...draft.images]; imageSettings = JSON.parse(JSON.stringify(draft.settings)); currentDraftId = draft.id;
+  undoStack = []; redoStack = []; currentIndex = 0; showPage(2); renderImages(currentIndex); hideAILoader();
+}
+
+async function removeDraftProject(id) {
+  let drafts = await localforage.getItem("aiExcelDraftsPro") || [];
+  drafts = drafts.filter(x => x.id !== id);
+  await localforage.setItem("aiExcelDraftsPro", drafts); renderDraftSystem();
+}
+async function deleteAllDrafts() {
+  if(!confirm("Purge all memories?")) return;
+  await localforage.removeItem("aiExcelDraftsPro"); renderDraftSystem();
+}
+async function goHome() { if (images.length > 0) await saveProjectDraft(); resetAppSystem(); await renderDraftSystem(); showPage(1); }
+function resetAppSystem() { killCropper(); images = []; imageSettings = []; currentIndex = -1; currentDraftId = null; undoStack = []; redoStack = []; updateUndoRedoUI(); }
+
+document.addEventListener("DOMContentLoaded", renderDraftSystem);
+</script>
+</body>
+</html>
