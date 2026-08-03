@@ -400,7 +400,14 @@ body {
 .back-to-index { position: fixed; top: 10px; left: 10px; background: transparent; border: none; color: white; font-size: 30px; cursor: pointer; padding: 0; z-index: 9999; }
 
 /* Cropper touch fix */
-.cropper-container, .cropper-wrap-box, .cropper-canvas { touch-action: pan-x pan-y !important; }
+.cropper-container,
+.cropper-wrap-box,
+.cropper-canvas,
+.cropper-crop-box,
+.cropper-face,
+.cropper-view-box {
+    touch-action: none !important;
+}
 .cropper-drag-box { pointer-events: none !important; }
 .crop-mode-active .cropper-drag-box { pointer-events: auto !important; touch-action: none !important; }
 
@@ -1284,15 +1291,22 @@ function startCropMode() {
   const imgEl = document.querySelector(".image-box.selected img");
   if(!cropper && imgEl) {
     cropper = new Cropper(imgEl, {
-      viewMode: 1, 
-      dragMode: 'none',
-      autoCropArea: 1,
-      autoCrop: true, 
-      background: false, 
-      responsive: true, 
-      zoomable: false,
-      ready() { updateFiltersDisplay(); }
-    });
+    viewMode: 1,
+    dragMode: 'crop',
+    autoCrop: true,
+    autoCropArea: 1,
+    background: false,
+    responsive: true,
+    zoomable: false,
+    movable: true,
+    cropBoxMovable: true,
+    cropBoxResizable: true,
+    toggleDragModeOnDblclick: false,
+    guides: true,
+    ready() {
+        this.cropper.cropper.style.touchAction = "none";
+    }
+});
   } else if(cropper) {
     cropper.setDragMode("none");
     cropper.crop();
