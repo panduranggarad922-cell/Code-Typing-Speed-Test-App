@@ -1099,7 +1099,12 @@ body {
       <button class="tool-btn" onclick="moveSelectedImage(-1)"> <i class="fa-solid fa-arrow-left"></i> Left</button>
       <button class="tool-btn" onclick="moveSelectedImage(1)"> <i class="fa-solid fa-arrow-right"></i> Right</button>
       <div style="width:1px; height:30px; background:rgba(255,255,255,0.2); margin:0 5px;"></div>
-       
+
+     <!-- AI CLEAN & BEAUTIFY BUTTONS -->
+      <button class="tool-btn" onclick="applyAIClean()" style="color: var(--accent-cyan);"><i class="fa-solid fa-wand-magic-sparkles"></i>AI Clean</button>
+      <button class="tool-btn" onclick="applyAIBeautify()" style="color: var(--accent-pink);"><i class="fa-solid fa-face-smile-beam"></i>AI Beautify</button>
+      <div style="width:1px; height:30px; background:rgba(255,255,255,0.2); margin:0 5px;"></div>
+
       <button class="tool-btn" onclick="openColorPanel()"><i class="fa-solid fa-palette"></i>Colors</button>
       <button class="tool-btn" onclick="switchSubPanel('adjustPanel')"><i class="fa-solid fa-sliders"></i>Adjust</button>
       <button class="tool-btn" onclick="switchSubPanel('filterPanel')"><i class="fa-solid fa-wand-magic"></i>Filter</button>
@@ -2490,6 +2495,139 @@ function moveSelectedImage(direction) {
     }
 }, 50);
 }
+
+
+
+// ==========================================
+// AI PROGRESS LOADER & ENHANCEMENT LOGIC
+// ==========================================
+
+function runAIProgress(msg, processFunction) {
+  if(currentIndex < 0) return;
+  document.getElementById("loaderModal").classList.add("show");
+  let progress = 1;
+  const textEl = document.getElementById("loaderText");
+  
+  const interval = setInterval(() => {
+    progress += Math.floor(Math.random() * 15) + 8; // Super fast increment
+    if(progress >= 100) progress = 100;
+    
+    textEl.innerHTML = `${msg} <br><span style="font-size: 32px; color: #00f0ff; text-shadow: 0 0 15px #00f0ff;">${progress}%</span>`;
+    
+    if(progress === 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        processFunction();
+        document.getElementById("loaderModal").classList.remove("show");
+        textEl.innerHTML = "Processing..."; // reset for future
+      }, 150);
+    }
+  }, 40); 
+}
+
+// 1. AI CLEAN LOGIC (Increases Detail/Sharpness)
+function applyAIClean() {
+  if(currentIndex < 0) return;
+  recordState(); // Save for Undo
+  
+  runAIProgress("✨ AI Deep Cleaning...", () => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+        canvas.width = img.width; canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const w = canvas.width, h = canvas.height;
+        const mix = 0.5; // Fine-tuned Sharpening intensity
+        const weights = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+        const kat = 3; const half = 1;
+        const dstData = ctx.createImageData(w, h);
+        const dstBuff = dstData.data;
+        const srcBuff = ctx.getImageData(0, 0, w, h).data;
+        
+        for (let i = 0; i < h; i++) {
+            for (let j = 0; j < w; j++) {
+                const dstOff = (i * w + j) * 4;
+                let r = 0, g = 0, b = 0;
+                for (let cy = 0; cy < kat; cy++) {
+                    for (let cx = 0; cx < kat; cx++) {
+                        const scy = Math.min(Math.max(i + cy - half, 0), h - 1);
+                        const scx = Math.min(Math.max(j + cx - half, 0), w - 1);
+                        const srcOff = (scy * w + scx) * 4;
+                        const wt = weights[cy * kat + cx];
+                        r += srcBuff[srcOff] * wt;
+                        g += srcBuff[srcOff + 1] * wt;
+                        b += srcBuff[srcOff + 2] * wt;
+                    }
+                }
+                dstBuff[dstOff] = mix * r + (1 - mix) * srcBuff[dstOff];
+                dstBuff[dstOff + 1] = mix * g + (1 - mix) * srcBuff[dstOff + 1];
+                dstBuff[dstOff + 2] = mix * b + (1 - mix) * srcBuff[dstOff + 2];
+                dstBuff[dstOff + 3] = srcBuff[dstOff + 3];
+            }
+        }
+        ctx.putImageData(dstData, 0, 0);
+
+        // Update current PDF page image
+        images[currentIndex] = canvas.toDataURL("image/jpeg", 0.95);
+        const targetImg = cropper ? document.querySelector(".cropper-canvas img") : document.querySelector(".image-box.selected img");
+        if(targetImg) targetImg.src = images[currentIndex];
+        if(cropper) cropper.replace(images[currentIndex]);
+        
+        // Reset manual filters as the actual image is transformed
+        imageSettings[currentIndex] = getDefaultSetting();
+        syncSlidersUI(currentIndex);
+        updateFiltersDisplay();
+    };
+    img.src = images[currentIndex];
+  });
+}
+
+// 2. AI BEAUTIFY LOGIC (Smooth & Clear)
+function applyAIBeautify() {
+  if(currentIndex < 0) return;
+  recordState(); // Save for Undo
+  
+  runAIProgress("🌟 AI Beautifying...", () => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+        canvas.width = img.width; canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        // Add soft blur overlay to hide noise/blemishes
+        ctx.globalAlpha = 0.35;
+        ctx.filter = "blur(8px)";
+        ctx.drawImage(img, 0, 0);
+        
+        // Add subtle glow and contrast recovery
+        ctx.globalAlpha = 0.25;
+        ctx.globalCompositeOperation = 'screen';
+        ctx.filter = "brightness(120%) saturate(150%) contrast(110%)";
+        ctx.drawImage(img, 0, 0);
+
+        // Reset context
+        ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.filter = 'none';
+
+        // Update current PDF page image
+        images[currentIndex] = canvas.toDataURL("image/jpeg", 0.95);
+        const targetImg = cropper ? document.querySelector(".cropper-canvas img") : document.querySelector(".image-box.selected img");
+        if(targetImg) targetImg.src = images[currentIndex];
+        if(cropper) cropper.replace(images[currentIndex]);
+        
+        // Reset manual filters as the actual image is transformed
+        imageSettings[currentIndex] = getDefaultSetting();
+        syncSlidersUI(currentIndex);
+        updateFiltersDisplay();
+    };
+    img.src = images[currentIndex];
+  });
+}
+ 
 </script>
 </body>
 </html>
