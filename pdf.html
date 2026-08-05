@@ -152,7 +152,7 @@ body {
 @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
 
 
-.back-btn, .home-btn, .next-preview-btn {
+.home-btn, .next-preview-btn {
   position: fixed;
   top: 10px;
   padding: 5px 11px;
@@ -165,7 +165,21 @@ body {
   color: white;
   backdrop-filter: blur(10px);
 }
-.back-btn { left: 10px; background: none; border: none; }
+ .back-btn {
+  position: fixed;
+  top: 10px;
+  padding: 5px 11px;
+  font-size: 26px;
+  font-weight: bold;
+  border-radius: 30px;
+  z-index: 200500;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: none;
+  backdrop-filter: none;
+}
+.back-btn { left: 10px; font-size: 26px; background: none; border: none; }
 .home-btn { right: 10px; background: rgba(255, 98, 0, 0.8); }
 .next-preview-btn { 
   right: 15px; 
