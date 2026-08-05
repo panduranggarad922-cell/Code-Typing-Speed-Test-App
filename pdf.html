@@ -165,7 +165,7 @@ body {
   color: white;
   backdrop-filter: blur(10px);
 }
-.back-btn { left: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+.back-btn { left: 10px; background: none; border: none; }
 .home-btn { right: 10px; background: rgba(255, 98, 0, 0.8); }
 .next-preview-btn { 
   right: 15px; 
@@ -1122,8 +1122,8 @@ body {
 
 <!-- PAGE 3: PREVIEW & DOWNLOAD -->
 <div id="page3" class="page">
-  <button class="back-btn" onclick="showPage(2)">⬅ Edit</button>
-  <button class="home-btn" onclick="goHome()">🏠 Home</button>
+  <button class="back-btn" onclick="showPage(2)">←</button>
+  <button class="home-btn" onclick="goHome()">Home</button>
   
   <div style="margin-top: 60px; text-align:center;">
     <input type="text" id="pdfName" placeholder="Enter PDF Name..." style="background:transparent; border:1px solid var(--accent-cyan); color:white; padding:12px; width:80%; max-width:300px; border-radius:10px; font-size:16px; margin-bottom:15px; outline:none;">
